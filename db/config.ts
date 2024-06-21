@@ -1,15 +1,5 @@
 import { column, defineDb, defineTable } from "astro:db";
 
-/* 
-- Crear dos tablas: Pacient and Turnos
-Tutor: Nombre, apellido, email, celular. ID del pacient
-
-- Pacient: Nombre, apellido, dni, obra social, type: 'NEW PACIENT' | 'OLD PACIENT'. ID del tutor
-
-- Turnos asociado a Pacient y las siguientes columnas: Date, AvailableDate and availableHours
-
-*/
-
 const Tutors = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),
