@@ -21,7 +21,8 @@ const Patients = defineTable({
     tutor_id: column.text({ references: () => Tutors.columns.id }),
   },
 });
-// Cada vez que se envia una solicitud por un patients, se debe actualizar el turno o crear uno nuevo. La solicitud se debe distinguir con dos valores, new-appointments y update-appointments
+
+/** TODO: Cada vez que se envia una solicitud por un patients, se debe actualizar el turno o crear uno nuevo. La solicitud se debe distinguir con dos valores, new-appointments y update-appointments */
 
 const Appointments = defineTable({
   columns: {
