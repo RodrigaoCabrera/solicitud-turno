@@ -5,12 +5,10 @@ import { db, eq, Tutors, Patients, Appointments } from "astro:db";
 const appointments = await db
   .select()
   .from(Appointments)
-  .innerJoin(Patients, eq(Appointments.patient_id, Patients.id))
-  .innerJoin(Tutors, eq(Patients.tutor_id, Tutors.id));
+  .innerJoin(Patients, eq(Appointments.patientId, Patients.id))
+  .innerJoin(Tutors, eq(Patients.tutorId, Tutors.id));
 
 //const Appointments = await db.select().from(Appointments);
-
-console.log(appointments);
 ---
 
 <Layout title="Welcome to Astro.">
@@ -20,6 +18,7 @@ console.log(appointments);
       <thead>
         <tr>
           <td>Nombre del paciente</td>
+          <td>Dni del paciente</td>
           <td>Nombre del tutor</td>
           <td>Fecha el turno</td>
         </tr>
@@ -28,9 +27,10 @@ console.log(appointments);
         {
           appointments.map((appointment) => (
             <tr>
-              <td>{appointment.Patients.first_name}</td>
-              <td>{appointment.Tutors.first_name}</td>
-              <td>{appointment.Appointments.appointment_date}</td>
+              <td>{appointment.Patients.firstName}</td>
+              <td>{appointment.Patients.dni}</td>
+              <td>{appointment.Tutors.firstName}</td>
+              <td>{appointment.Appointments.appointmentDate}</td>
             </tr>
           ))
         }
