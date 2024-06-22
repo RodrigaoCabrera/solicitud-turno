@@ -5,7 +5,7 @@ const Tutors = defineTable({
     id: column.text({ primaryKey: true }),
     firstName: column.text(),
     lastName: column.text(),
-    email: column.text(),
+    email: column.text({ unique: true }),
     phone: column.number(),
   },
 });

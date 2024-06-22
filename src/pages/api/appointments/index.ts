@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { object, string, boolean, email, number, safeParse } from "valibot";
 import type { APIRoute } from "astro";
-import { db, Tutors, Patients, Appointments } from "astro:db";
+import { db, eq, Tutors, Patients, Appointments } from "astro:db";
 
 // Request schema
 const appoinmentDataSchema = object({
@@ -50,8 +50,6 @@ export const POST: APIRoute = async ({ request }) => {
   const data = output;
   const { patient, tutor, appointment } = data;
 
-  // TODO: check that patient does not exist
-
   const appointmentId = generateId(patient.dni);
   const tutorId = generateId(tutor.email);
 
@@ -67,10 +65,13 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // Add tutor data
-  await db.insert(Tutors).values({
-    id: tutorId,
-    ...tutor,
-  });
+  await db
+    .insert(Tutors)
+    .values({
+      id: tutorId,
+      ...tutor,
+    })
+    .onConflictDoNothing();
 
   // Add patient data
   await db.insert(Patients).values({
@@ -83,7 +84,7 @@ export const POST: APIRoute = async ({ request }) => {
   await db.insert(Appointments).values({
     id: appointmentId,
     ...appointment,
-    patientId: patient.dni,
+    patientId: appointmentId,
   });
 
   return res("Turno reservado con éxito", { status: 200 });
