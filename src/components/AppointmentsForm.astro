@@ -114,7 +114,7 @@
     };
 
     try {
-      fetch("/api/appointments", {
+      const response = await fetch("/api/appointments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -124,10 +124,10 @@
           tutor,
           appointment,
         }),
-      }).then((res) => {
-        // TODO: handle errors
-        console.log(res, res.ok, res.status);
       });
+      console.log({ response });
+      const data = await response.json();
+      console.log({ data });
     } catch (error) {
       // TODO: handle errors
       console.log("Hubo un error al enviar la solicitud de turno.");

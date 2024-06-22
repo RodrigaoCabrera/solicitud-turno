@@ -64,6 +64,24 @@ export const POST: APIRoute = async ({ request }) => {
     return res("El paciente ya tiene un turno activo", { status: 409 }); // 409 Conflict
   }
 
+  // Check if there is a appointmentTime
+  const existingDateTimeAppointment = await db
+    .select()
+    .from(Appointments)
+    .where(eq(Appointments.appointmentTime, appointment.appointmentTime))
+    .limit(1);
+
+  if (existingDateTimeAppointment.length > 0) {
+    return res(
+      JSON.stringify({
+        message: "Ya existe un turno para la fecha y hora especificadas",
+      }),
+      {
+        status: 409,
+      }
+    );
+  }
+
   // Add tutor data
   await db
     .insert(Tutors)
