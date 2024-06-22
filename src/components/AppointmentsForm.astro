@@ -1,7 +1,7 @@
 <form method="post" action="/api/appointments">
   <h2>Solicitud de Turnos</h2>
 
-  // TODO: Create componente for each form type
+  <!--  TODO: Create componente for each form type -->
   <h3>Datos del Paciente</h3>
   <div>
     <label for="patientFirstName">Nombre:</label>
@@ -126,7 +126,7 @@
         }),
       }).then((res) => {
         // TODO: handle errors
-        console.log(res.ok, res.status);
+        console.log(res, res.ok, res.status);
       });
     } catch (error) {
       // TODO: handle errors
