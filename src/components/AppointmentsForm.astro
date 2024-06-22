@@ -1,0 +1,140 @@
+<form method="post" action="/api/appointments">
+  <h2>Solicitud de Turnos</h2>
+
+  // TODO: Create componente for each form type
+  <h3>Datos del Paciente</h3>
+  <div>
+    <label for="patientFirstName">Nombre:</label>
+    <input type="text" id="patientFirstName" name="patientFirstName" required />
+  </div>
+  <div>
+    <label for="patientLastName">Apellido:</label>
+    <input type="text" id="patientLastName" name="patientLastName" required />
+  </div>
+  <div>
+    <label for="patientDni">DNI:</label>
+    <input type="text" id="patientDni" name="patientDni" />
+  </div>
+
+  <div>
+    <label for="healthInsurance">Seguro Médico (si aplica):</label>
+    <input type="text" id="healthInsurance" name="healthInsurance" />
+  </div>
+
+  <div>
+    <label for="isNewPatient">Paciente Nuevo? (Si/No):</label>
+    <select id="isNewPatient" name="isNewPatient" required>
+      <option value="true">Si</option>
+      <option value="false">No</option>
+    </select>
+  </div>
+
+  <h3>Datos del Tutor</h3>
+  <div>
+    <label for="tutorFirstName">Nombre:</label>
+    <input type="text" id="tutorFirstName" name="tutorFirstName" />
+  </div>
+  <div>
+    <label for="tutorLastName">Apellido:</label>
+    <input type="text" id="tutorLastName" name="tutorLastName" />
+  </div>
+  <div>
+    <label for="tutorEmail">Correo Electrónico:</label>
+    <input type="email" id="tutorEmail" name="tutorEmail" />
+  </div>
+  <div>
+    <label for="tutorPhone">Teléfono:</label>
+    <input type="tel" id="tutorPhone" name="tutorPhone" />
+  </div>
+
+  <h3>Detalles de la Cita</h3>
+  <div>
+    <label for="appointmentDate">Fecha de la Cita (YYYY-MM-DD):</label>
+    <input type="date" id="appointmentDate" name="appointmentDate" required />
+  </div>
+  <div>
+    <label for="appointmentTime">Hora de la Cita (HH:MM):</label>
+    <input type="time" id="appointmentTime" name="appointmentTime" required />
+  </div>
+
+  <button type="submit">Enviar Solicitud</button>
+</form>
+
+<script>
+  // Interfaz para Tutor
+  interface Tutor {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: number;
+  }
+
+  // Interfaz para Paciente
+  interface Patient {
+    firstName: string;
+    lastName: string;
+    dni?: string; // Opcional
+    isNewPatient: boolean;
+    healthInsurance?: string; // Opcional
+    tutorId?: string; // Opcional (relación con Tutor)
+  }
+
+  // Interfaz para Solicitud de Cita
+  interface AppointmentRequest {
+    appointmentDate: string;
+    appointmentTime: string;
+  }
+
+  const submitForm = async (event: Event) => {
+    event.preventDefault();
+
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    // TODO: Create function to get form data
+    const patient: Patient = {
+      firstName: formData.get("patientFirstName") as string,
+      lastName: formData.get("patientLastName") as string,
+      dni: formData.get("patientDni") as string,
+      isNewPatient: formData.get("isNewPatient") === "true",
+      healthInsurance: formData.get("healthInsurance") as string,
+    };
+
+    const tutor: Tutor = {
+      // Datos del tutor son opcionales
+      firstName: (formData.get("tutorFirstName") as string) || "",
+      lastName: (formData.get("tutorLastName") as string) || "",
+      email: (formData.get("tutorEmail") as string) || "",
+      phone: parseInt((formData.get("tutorPhone") as string) || "0"),
+    };
+
+    const appointment: AppointmentRequest = {
+      appointmentDate: formData.get("appointmentDate") as string,
+      appointmentTime: formData.get("appointmentTime") as string,
+    };
+
+    try {
+      fetch("/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          patient,
+          tutor,
+          appointment,
+        }),
+      }).then((res) => {
+        // TODO: handle errors
+        console.log(res.ok, res.status);
+      });
+    } catch (error) {
+      // TODO: handle errors
+      console.log("Hubo un error al enviar la solicitud de turno.");
+    }
+  };
+
+  const $form = document.querySelector("form");
+
+  $form?.addEventListener("submit", submitForm);
+</script>
