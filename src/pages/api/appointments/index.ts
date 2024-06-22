@@ -55,6 +55,17 @@ export const POST: APIRoute = async ({ request }) => {
   const appointmentId = generateId(patient.dni);
   const tutorId = generateId(tutor.email);
 
+  // Check that patient does not exist
+  const existingAppointment = await db
+    .select()
+    .from(Appointments)
+    .where(eq(Appointments.patientId, appointmentId))
+    .limit(1);
+
+  if (existingAppointment.length > 0) {
+    return res("El paciente ya tiene un turno activo", { status: 409 }); // 409 Conflict
+  }
+
   // Add tutor data
   await db.insert(Tutors).values({
     id: tutorId,
@@ -63,7 +74,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   // Add patient data
   await db.insert(Patients).values({
-    id: patient.dni,
+    id: appointmentId,
     ...patient,
     tutorId,
   });
