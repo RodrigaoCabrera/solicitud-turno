@@ -81,8 +81,7 @@
 
   // Interfaz para Solicitud de Cita
   interface AppointmentRequest {
-    appointmentDate: string;
-    appointmentTime: string;
+    date: string;
   }
 
   const submitForm = async (event: Event) => {
@@ -108,9 +107,12 @@
       phone: parseInt((formData.get("tutorPhone") as string) || "0"),
     };
 
+    const date =
+      `${formData.get("appointmentDate")}-${formData.get("appointmentTime")}` as string;
+
+    console.log({ date });
     const appointment: AppointmentRequest = {
-      appointmentDate: formData.get("appointmentDate") as string,
-      appointmentTime: formData.get("appointmentTime") as string,
+      date,
     };
 
     try {
