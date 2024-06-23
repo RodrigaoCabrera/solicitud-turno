@@ -10,28 +10,28 @@ function Picker({ value, onChange }) {
   });
 
   /** TODO: to parse date from backend */
-  const availableDates = [
-    "2024-06-20",
-    "2024-06-22",
+  const unavailableDates = [
+    "2024-06-25",
+    "2024-06-26",
     "2024-06-28",
-    "2024-06-01",
+    "2024-07-01",
   ];
 
-  // Available date in ISO format
-  const parsedAvailableDates = availableDates.map((date) => {
-    const parsedDate = parse(date);
+  // Unavailable date in ISO format
+  const parsedUnavailableDates = unavailableDates.map((unavailableDate) => {
+    const parsedDate = parse(unavailableDate);
     parsedDate.setUTCHours(0, 0, 0, 0);
     return parsedDate;
   });
 
   const isDateDisallowed = (date) => {
-    for (const availableDate of parsedAvailableDates) {
-      if (isEqual(availableDate, date)) {
-        return false;
+    for (const unavailableDate of parsedUnavailableDates) {
+      if (isEqual(unavailableDate, date)) {
+        return true;
       }
     }
 
-    return true;
+    return false;
   };
 
   return (
