@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useState, type ChangeEvent, type ReactEventHandler } from "react";
 import { CalendarDate, CalendarMonth } from "./Calendar";
 import { format, isEqual, parse } from "@formkit/tempo";
 
-function Picker({ value, onChange }) {
+function Picker({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (event: Event) => void;
+}) {
   const [today, setToday] = useState(() => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -24,7 +30,7 @@ function Picker({ value, onChange }) {
     return parsedDate;
   });
 
-  const isDateDisallowed = (date) => {
+  const isDateDisallowed = (date: Date) => {
     for (const unavailableDate of parsedUnavailableDates) {
       if (isEqual(unavailableDate, date)) {
         return true;
@@ -51,14 +57,32 @@ function Picker({ value, onChange }) {
 }
 
 function Cally() {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(() => {
+    const storedDate = localStorage.getItem("storedDate") || "";
+    return storedDate;
+  });
 
-  const onChange = (event) => setValue(event.target.value);
+  const onChange = (event: Event) => {
+    const e = event.target as HTMLInputElement;
+
+    setValue(e.value);
+  };
+
+  const goToAppointmentForm = () => {
+    localStorage.setItem("storedDate", value);
+  };
 
   return (
     <>
       <p>Value is: {value}</p>
       <Picker value={value} onChange={onChange} />
+      <a
+        type="button"
+        href="/appointments-request"
+        onClick={goToAppointmentForm}
+      >
+        Confirmar
+      </a>
     </>
   );
 }
