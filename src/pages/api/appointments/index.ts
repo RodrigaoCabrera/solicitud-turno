@@ -21,8 +21,7 @@ const appoinmentDataSchema = object({
   }),
 
   appointment: object({
-    appointmentDate: string(),
-    appointmentTime: string(),
+    date: string(),
   }),
 });
 
@@ -31,13 +30,13 @@ const generateId = (str: string) => {
 };
 // Response
 const res = (
-  body: string,
+  body: { message: string },
   {
     status,
     statusText,
     headers,
   }: { status?: number; statusText?: string; headers?: Headers }
-) => new Response(body, { status, statusText, headers });
+) => new Response(JSON.stringify(body), { status, statusText, headers });
 
 export const POST: APIRoute = async ({ request }) => {
   const { success, output } = safeParse(
@@ -45,37 +44,43 @@ export const POST: APIRoute = async ({ request }) => {
     await request.json()
   );
 
-  if (!success) return res("Bad request", { status: 400 });
+  if (!success) return res({ message: "Bad request" }, { status: 400 });
 
   const data = output;
   const { patient, tutor, appointment } = data;
 
-  const appointmentId = generateId(patient.dni);
+  const patientId = generateId(patient.dni);
   const tutorId = generateId(tutor.email);
 
-  // Check that patient does not exist
+  // Check that patient does not has a appointment
   const existingAppointment = await db
     .select()
     .from(Appointments)
-    .where(eq(Appointments.patientId, appointmentId))
+    .where(eq(Appointments.patientId, patientId))
     .limit(1);
 
-  if (existingAppointment.length > 0) {
-    return res("El paciente ya tiene un turno activo", { status: 409 }); // 409 Conflict
+  if (existingAppointment.length > 0 && existingAppointment[0].isActive) {
+    return res(
+      { message: "El paciente ya tiene un turno activo" },
+      { status: 409 }
+    ); // 409 Conflict
   }
 
-  // Check if there is a appointmentTime
-  const existingDateTimeAppointment = await db
+  // Check if exist a active date
+  const existingAppointmentDate = await db
     .select()
     .from(Appointments)
-    .where(eq(Appointments.appointmentTime, appointment.appointmentTime))
+    .where(eq(Appointments.date, appointment.date))
     .limit(1);
 
-  if (existingDateTimeAppointment.length > 0) {
+  if (
+    existingAppointmentDate.length > 0 &&
+    existingAppointmentDate[0].isActive
+  ) {
     return res(
-      JSON.stringify({
+      {
         message: "Ya existe un turno para la fecha y hora especificadas",
-      }),
+      },
       {
         status: 409,
       }
@@ -92,18 +97,28 @@ export const POST: APIRoute = async ({ request }) => {
     .onConflictDoNothing();
 
   // Add patient data
-  await db.insert(Patients).values({
-    id: appointmentId,
-    ...patient,
-    tutorId,
-  });
+  await db
+    .insert(Patients)
+    .values({
+      id: patientId,
+      ...patient,
+      tutorId,
+    })
+    .onConflictDoUpdate({ target: Patients.id, set: { ...patient } });
 
   // Add tutor data
-  await db.insert(Appointments).values({
-    id: appointmentId,
-    ...appointment,
-    patientId: appointmentId,
-  });
+  await db
+    .insert(Appointments)
+    .values({
+      id: appointment.date,
+      ...appointment,
+      isActive: true,
+      patientId: patientId,
+    })
+    .onConflictDoUpdate({
+      target: Appointments.id,
+      set: { isActive: true, patientId: patientId },
+    });
 
-  return res("Turno reservado con éxito", { status: 200 });
+  return res({ message: "Turno reservado con éxito" }, { status: 200 });
 };

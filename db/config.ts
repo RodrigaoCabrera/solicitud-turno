@@ -22,13 +22,11 @@ const Patients = defineTable({
   },
 });
 
-/** TODO: Cada vez que se envia una solicitud por un patients, se debe actualizar el turno o crear uno nuevo. La solicitud se debe distinguir con dos valores, new-appointments y update-appointments */
-
 const Appointments = defineTable({
   columns: {
-    id: column.text({ primaryKey: true }), // TIene que se el id del patients
-    appointmentDate: column.text(),
-    appointmentTime: column.text(),
+    id: column.text({ primaryKey: true }),
+    date: column.text(),
+    isActive: column.boolean(),
 
     patientId: column.text({ references: () => Patients.columns.id }),
   },
