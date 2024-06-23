@@ -42,6 +42,7 @@ function Picker({ value, onChange }) {
         max="2024-12-31"
         locale="es-ES"
         isDateDisallowed={isDateDisallowed}
+        onChange={onChange}
       >
         <CalendarMonth />
       </CalendarDate>
