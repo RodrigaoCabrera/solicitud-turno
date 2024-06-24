@@ -115,6 +115,9 @@
         }),
       });
       console.log({ response });
+      if (response.ok) {
+        localStorage.removeItem("storedDate");
+      }
       const data = await response.json();
       console.log({ data });
     } catch (error) {
