@@ -45,20 +45,13 @@
     <input type="tel" id="tutorPhone" name="tutorPhone" />
   </div>
 
-  <h3>Detalles de la Cita</h3>
-  <div>
-    <label for="appointmentDate">Fecha de la Cita (YYYY-MM-DD):</label>
-    <input type="date" id="appointmentDate" name="appointmentDate" required />
-  </div>
-  <div>
-    <label for="appointmentTime">Hora de la Cita (HH:MM):</label>
-    <input type="time" id="appointmentTime" name="appointmentTime" required />
-  </div>
-
   <button type="submit">Enviar Solicitud</button>
 </form>
 
 <script>
+  const date = localStorage.getItem("storedDate") || "";
+
+  console.log({ date });
   // Interfaz para Tutor
   interface Tutor {
     firstName: string;
@@ -105,10 +98,6 @@
       phone: parseInt((formData.get("tutorPhone") as string) || "0"),
     };
 
-    const date =
-      `${formData.get("appointmentDate")}-${formData.get("appointmentTime")}` as string;
-
-    console.log({ date });
     const appointment: AppointmentRequest = {
       date,
     };

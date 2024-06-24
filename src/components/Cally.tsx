@@ -1,13 +1,19 @@
-import { useState, type ChangeEvent, type ReactEventHandler } from "react";
+import { useState, type ChangeEvent } from "react";
 import { CalendarDate, CalendarMonth } from "./Calendar";
 import { format, isEqual, parse } from "@formkit/tempo";
+import CalendarTime from "./CalendarTime.tsx";
+
+interface Appointmentdate {
+  calendarDate: string;
+  calendarTime: string;
+}
 
 function Picker({
   value,
   onChange,
 }: {
-  value: string;
-  onChange: (event: Event) => void;
+  value: Appointmentdate;
+  onChange: (event: Event | ChangeEvent<HTMLInputElement>) => void;
 }) {
   const [today, setToday] = useState(() => {
     const now = new Date();
@@ -27,6 +33,7 @@ function Picker({
   const parsedUnavailableDates = unavailableDates.map((unavailableDate) => {
     const parsedDate = parse(unavailableDate);
     parsedDate.setUTCHours(0, 0, 0, 0);
+
     return parsedDate;
   });
 
@@ -43,7 +50,7 @@ function Picker({
   return (
     <div>
       <CalendarDate
-        value={value}
+        value={value.calendarDate}
         min={today}
         max="2024-12-31"
         locale="es-ES"
@@ -57,25 +64,48 @@ function Picker({
 }
 
 function Cally() {
-  const [value, setValue] = useState(() => {
-    const storedDate = localStorage.getItem("storedDate") || "";
-    return storedDate;
+  const [value, setValue] = useState((): Appointmentdate => {
+    const storedDate = localStorage.getItem("storedDate");
+
+    if (storedDate) {
+      const [date, time] = storedDate.split("T");
+      const dateOnly = date;
+      const timeOnly = time;
+
+      return {
+        calendarDate: dateOnly,
+        calendarTime: timeOnly,
+      };
+    }
+
+    return {
+      calendarDate: "",
+      calendarTime: "",
+    };
   });
 
-  const onChange = (event: Event) => {
+  const onChange = (event: Event | ChangeEvent<HTMLInputElement>) => {
     const e = event.target as HTMLInputElement;
 
-    setValue(e.value);
+    const newCalendardate = {
+      ...value,
+      [e.id]: e.value,
+    };
+
+    setValue(newCalendardate);
   };
 
   const goToAppointmentForm = () => {
-    localStorage.setItem("storedDate", value);
+    const newDate = `${value.calendarDate}T${value.calendarTime}`;
+    localStorage.setItem("storedDate", newDate);
   };
 
   return (
     <>
-      <p>Value is: {value}</p>
+      <p>Value is: {value.calendarDate}</p>
       <Picker value={value} onChange={onChange} />
+
+      <CalendarTime onChange={onChange} timeValue={value.calendarTime} />
       <a
         type="button"
         href="/appointments-request"

@@ -90,6 +90,7 @@ export const CalendarDate = forwardRef<
 
   return (
     <calendar-date
+      id="calendarDate"
       ref={ref}
       show-outside-days={showOutsideDays ? "" : undefined}
       first-day-of-week={firstDayOfWeek}
