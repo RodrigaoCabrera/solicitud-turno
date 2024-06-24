@@ -7,7 +7,6 @@ interface CalendarTimeProps {
 }
 
 const CalendarTime: React.FC<CalendarTimeProps> = ({ onChange, timeValue }) => {
-  console.log({ timeValue });
   return (
     <>
       <input

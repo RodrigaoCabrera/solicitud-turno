@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent } from "react";
 import { CalendarDate, CalendarMonth } from "./Calendar";
-import { format, isEqual, parse } from "@formkit/tempo";
+import { format, isEqual, parse, tzDate } from "@formkit/tempo";
 import CalendarTime from "./CalendarTime.tsx";
 
 interface Appointmentdate {
@@ -68,13 +68,9 @@ function Cally() {
     const storedDate = localStorage.getItem("storedDate");
 
     if (storedDate) {
-      const [date, time] = storedDate.split("T");
-      const dateOnly = date;
-      const timeOnly = time;
-
       return {
-        calendarDate: dateOnly,
-        calendarTime: timeOnly,
+        calendarDate: format(storedDate, "YYYY-MM-DD"),
+        calendarTime: format(storedDate, "HH:mm"),
       };
     }
 
@@ -96,7 +92,9 @@ function Cally() {
   };
 
   const goToAppointmentForm = () => {
-    const newDate = `${value.calendarDate}T${value.calendarTime}`;
+    const t = new Date(`${value.calendarDate} ${value.calendarTime}`);
+
+    const newDate = format(t, "YYYY-MM-DDTHH:mm:ssZ");
     localStorage.setItem("storedDate", newDate);
   };
 
