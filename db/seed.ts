@@ -22,13 +22,4 @@ export default async function () {
       tutorId: "1",
     },
   ]);
-
-  await db.insert(Appointments).values([
-    {
-      id: "2024-01-01-10:30",
-      date: "2024-01-01-10:30",
-      isActive: false,
-      patientId: "40083227",
-    },
-  ]);
 }
