@@ -45,13 +45,15 @@
     <input type="tel" id="tutorPhone" name="tutorPhone" />
   </div>
 
+  <section>
+    <p id="errorMessage"></p>
+  </section>
   <button type="submit">Enviar Solicitud</button>
 </form>
 
 <script>
   const date = localStorage.getItem("storedDate") || "";
 
-  console.log({ date });
   // Interfaz para Tutor
   interface Tutor {
     firstName: string;
@@ -114,12 +116,19 @@
           appointment,
         }),
       });
-      console.log({ response });
+
+      const data = await response.json();
+      console.log(response);
       if (response.ok) {
         localStorage.removeItem("storedDate");
+        form.reset();
+      } else {
+        const $errorMessage = document.querySelector(
+          "#errorMessage"
+        ) as HTMLElement;
+
+        if ($errorMessage) $errorMessage.innerText = data.message;
       }
-      const data = await response.json();
-      console.log({ data });
     } catch (error) {
       // TODO: handle errors
       console.log("Hubo un error al enviar la solicitud de turno.");
