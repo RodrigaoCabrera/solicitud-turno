@@ -104,11 +104,7 @@ function Cally() {
       <Picker value={value} onChange={onChange} />
 
       <CalendarTime onChange={onChange} timeValue={value.calendarTime} />
-      <a
-        type="button"
-        href="/appointments-request"
-        onClick={goToAppointmentForm}
-      >
+      <a type="button" href="/appointments" onClick={goToAppointmentForm}>
         Confirmar
       </a>
     </>

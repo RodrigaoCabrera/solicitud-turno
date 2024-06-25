@@ -30,7 +30,7 @@ const generateId = (str: string) => {
 };
 // Response
 const res = (
-  body: { message: string },
+  body: { message: string; id?: string },
   {
     status,
     statusText,
@@ -49,6 +49,7 @@ export const POST: APIRoute = async ({ request }) => {
   const data = output;
   const { patient, tutor, appointment } = data;
 
+  const appointmentId = generateId(appointment.date);
   const patientId = generateId(patient.dni);
   const tutorId = generateId(tutor.email);
 
@@ -70,7 +71,7 @@ export const POST: APIRoute = async ({ request }) => {
   const existingAppointmentDate = await db
     .select()
     .from(Appointments)
-    .where(eq(Appointments.date, appointment.date))
+    .where(eq(Appointments.id, appointmentId))
     .limit(1);
 
   if (
@@ -110,7 +111,7 @@ export const POST: APIRoute = async ({ request }) => {
   await db
     .insert(Appointments)
     .values({
-      id: appointment.date,
+      id: appointmentId,
       ...appointment,
       isActive: true,
       patientId: patientId,
@@ -120,5 +121,8 @@ export const POST: APIRoute = async ({ request }) => {
       set: { isActive: true, patientId: patientId },
     });
 
-  return res({ message: "Turno reservado con éxito" }, { status: 200 });
+  return res(
+    { message: "Turno reservado con éxito", id: appointmentId },
+    { status: 200 }
+  );
 };

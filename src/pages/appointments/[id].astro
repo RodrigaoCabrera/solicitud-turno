@@ -1,0 +1,54 @@
+---
+import { format } from "@formkit/tempo";
+import { db, eq, Patients, Tutors, Appointments } from "astro:db";
+interface Props {
+  id: string;
+}
+const { id } = Astro.params;
+// Get appointment info
+const appointment = await db
+  .select({
+    date: Appointments.date,
+    patientName: Patients.firstName,
+    healthInsurance: Patients.healthInsurance,
+    tutorName: Tutors.firstName,
+  })
+  .from(Appointments)
+  .where(eq(Appointments.id, id))
+  .innerJoin(Patients, eq(Appointments.patientId, Patients.id))
+  .innerJoin(Tutors, eq(Patients.tutorId, Tutors.id));
+console.log(appointment);
+
+if (appointment.length < 1) return Astro.redirect("/404");
+
+const { date, patientName, healthInsurance, tutorName } = appointment[0];
+
+// Format date
+const appointmentdate = format(date, "D MMMM YYYY", "es");
+const appointmentTime = format(date, "HH:mm");
+---
+
+<section>
+  <h1>Turno reservado</h1>
+  <article>
+    <div>
+      <strong>Fecha:</strong>
+      <span>{appointmentdate}</span>
+    </div>
+    <div>
+      <strong>Hora:</strong>
+      <span>{appointmentTime}</span>
+    </div>
+    <div>
+      <strong>Paciente:</strong>
+      <span>{patientName}</span>
+    </div>
+    <div>
+      <strong>Tutor:</strong>
+      <span>{tutorName}</span>
+    </div>
+    <div>
+      <span>{healthInsurance}</span>
+    </div>
+  </article>
+</section>
