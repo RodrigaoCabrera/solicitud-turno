@@ -12,14 +12,13 @@ const tutors = await db.select().from(Tutors);
 console.log({ tutors });
 ---
 
-<Layout title="Welcome to Astro.">
+<Layout title="Turnos app">
   <main>
     <h1>Turnos</h1>
     <table>
       <thead>
         <tr>
           <td>Is active</td>
-          <td>Id del paciente</td>
           <td>Nombre del paciente</td>
           <td>Dni del paciente</td>
           <td>Nombre del tutor</td>
@@ -34,7 +33,6 @@ console.log({ tutors });
               <td>
                 {appointment.Appointments.isActive ? "activo" : "No activo"}
               </td>
-              <td>{appointment.Patients.id}</td>
               <td>{appointment.Patients.firstName}</td>
               <td>{appointment.Patients.dni}</td>
               <td>{appointment.Tutors.firstName}</td>
