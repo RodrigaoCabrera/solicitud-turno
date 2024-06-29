@@ -29,6 +29,36 @@ const Appointments = defineTable({
     isActive: column.boolean(),
 
     patientId: column.text({ references: () => Patients.columns.id }),
+
+    professionalId: column.text({
+      references: () => ProfessionalProfile.columns.id,
+    }),
+  },
+});
+
+const ProfessionalProfile = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    firstName: column.text(),
+    lastName: column.text(),
+    email: column.text({ unique: true }),
+    profession: column.text(),
+    sessionTime: column.number(),
+  },
+});
+
+const Availability = defineTable({
+  columns: {
+    id: column.text({ primaryKey: true }),
+    dayOfWeek: column.number(), // 0-6 para representar días de la semana
+    startTimeAM: column.text(), // Formato HH:MM
+    endTimeAM: column.text(), // Formato HH:MM
+    startTimePM: column.text(), // Formato HH:MM
+    endTimePM: column.text(), // Formato HH:MM
+
+    professionalId: column.text({
+      references: () => ProfessionalProfile.columns.id,
+    }),
   },
 });
 
@@ -37,5 +67,7 @@ export default defineDb({
     Tutors,
     Patients,
     Appointments,
+    ProfessionalProfile,
+    Availability,
   },
 });

@@ -1,8 +1,33 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Cally from "../../components/Cally.tsx";
+
+import {
+  db,
+  eq,
+  ProfessionalProfile,
+  Availability,
+  Appointments,
+} from "astro:db";
+
+// Get data from astro db
+const professionalData = await db
+  .select()
+  .from(Availability)
+  .innerJoin(
+    ProfessionalProfile,
+    eq(Availability.professionalId, ProfessionalProfile.id)
+  );
+const appointments = await db.select().from(Appointments);
+
+console.log(professionalData);
+console.log(appointments);
 ---
 
 <Layout title="Elegir fecha y hora">
-  <Cally client:only="react" />
+  <Cally
+    client:only="react"
+    professionalData={professionalData}
+    appointments={appointments}
+  />
 </Layout>

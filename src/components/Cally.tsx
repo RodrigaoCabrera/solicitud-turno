@@ -1,19 +1,52 @@
 import { useState, type ChangeEvent } from "react";
 import { CalendarDate, CalendarMonth } from "./Calendar";
-import { format, isEqual, parse, tzDate } from "@formkit/tempo";
+import { format, diffMinutes, isEqual } from "@formkit/tempo";
 import CalendarTime from "./CalendarTime.tsx";
 
 interface Appointmentdate {
   calendarDate: string;
   calendarTime: string;
 }
+interface Availability {
+  id: string;
+  dayOfWeek: number; // 0-6 para representar días de la semana
+  startTimeAM: string; // Formato HH:MM
+  endTimeAM: string; // Formato HH:MM
+  startTimePM: string; // Formato HH:MM
+  endTimePM: string; // Formato HH:MM
+  professionalId: string;
+}
+interface ProfessionalProfile {
+  id: string;
+  firstName: string; // 0-6 para representar días de la semana
+  lastName: string; // Formato HH:MM
+  email: string; // Formato HH:MM
+  profession: string; // Formato HH:MM
+  sessionTime: number; // Formato HH:MM
+}
+
+interface Appointments {
+  id: string;
+  date: string;
+  isActive: boolean;
+  professionalId: string;
+  patientId: string;
+}
+interface ProfessionalData {
+  Availability: Availability;
+  ProfessionalProfile: ProfessionalProfile;
+}
 
 function Picker({
   value,
   onChange,
+  professionalData,
+  appointments,
 }: {
   value: Appointmentdate;
   onChange: (event: Event | ChangeEvent<HTMLInputElement>) => void;
+  professionalData: ProfessionalData[];
+  appointments: Appointments[];
 }) {
   const [today, setToday] = useState(() => {
     const now = new Date();
@@ -21,30 +54,58 @@ function Picker({
     return format(now, "YYYY-MM-DD");
   });
 
-  /** TODO: to parse date from backend */
-  const unavailableDates = [
-    "2024-06-25",
-    "2024-06-26",
-    "2024-06-28",
-    "2024-07-01",
-  ];
+  const availableDays = professionalData.map(
+    (data) => data.Availability.dayOfWeek
+  );
 
-  // Unavailable date in ISO format
-  const parsedUnavailableDates = unavailableDates.map((unavailableDate) => {
-    const parsedDate = parse(unavailableDate);
-    parsedDate.setUTCHours(0, 0, 0, 0);
+  const isfilledSchedule = (date: Date) => {
+    // Filtrar los appointments que coincidan con el 'date' con el metodo isEqual
 
-    return parsedDate;
-  });
+    // Cálculo de la cantidad de sesiones disponibles por día según el sesionTime y el rango horario tanto AM como PM
+    const session = professionalData.filter(
+      (data) => data.Availability.dayOfWeek === date.getDay()
+    );
 
-  const isDateDisallowed = (date: Date) => {
-    for (const unavailableDate of parsedUnavailableDates) {
-      if (isEqual(unavailableDate, date)) {
-        return true;
+    let sessionsAmount = 0;
+    const sessionStartAM = session[0].Availability.startTimeAM; //"09:00";
+    const sessionEndAM = session[0].Availability.endTimeAM; // "11:00";
+    sessionsAmount =
+      diffMinutes(
+        new Date(`${format(date, "YYYY-MM-DD")} ${sessionEndAM}`),
+        `${format(date, "YYYY-MM-DD")} ${sessionStartAM}`
+      ) / professionalData[0].ProfessionalProfile.sessionTime;
+
+    const sessionStartPM = session[0].Availability.startTimePM;
+    const sessionEndPM = session[0].Availability.endTimePM;
+    sessionsAmount +=
+      diffMinutes(
+        new Date(`${format(date, "YYYY-MM-DD")} ${sessionEndPM}`),
+        `${format(date, "YYYY-MM-DD")} ${sessionStartPM}`
+      ) / professionalData[0].ProfessionalProfile.sessionTime;
+
+    const filteredAppointments = appointments.filter(
+      (appointment: Appointments) => {
+        const calenddarDate = format({
+          date,
+          format: "YYYY-MM-DD",
+          tz: "Pacific/Chatham",
+        });
+        const appointmentDate = format(appointment.date, "YYYY-MM-DD");
+        return isEqual(calenddarDate, appointmentDate);
       }
+    );
+    // Determinar si la cantidad de sesiones es igual a la cantidad de appointment
+    const appointmentsAmount = filteredAppointments.length;
+    return sessionsAmount === appointmentsAmount;
+  };
+  // Determinar cuantas sesiones tiene por dia segun la cantidad de minutos por sesion. Luego ver cuantos appointment tiene en ese dia de la semana, si ya hay existe la cantidad de sesiones diaria, ese día debe estar deshabilitado
+  const isDateDisallowed = (date: Date) => {
+    if (availableDays.length > 0 && availableDays.includes(date.getDay())) {
+      if (isfilledSchedule(date)) return true;
+      return false;
     }
 
-    return false;
+    return true;
   };
 
   return (
@@ -63,7 +124,13 @@ function Picker({
   );
 }
 
-function Cally() {
+function Cally({
+  professionalData,
+  appointments,
+}: {
+  professionalData: ProfessionalData[];
+  appointments: Appointments[];
+}) {
   const [value, setValue] = useState((): Appointmentdate => {
     const storedDate = localStorage.getItem("storedDate");
 
@@ -101,7 +168,12 @@ function Cally() {
   return (
     <>
       <p>Value is: {value.calendarDate}</p>
-      <Picker value={value} onChange={onChange} />
+      <Picker
+        value={value}
+        onChange={onChange}
+        professionalData={professionalData}
+        appointments={appointments}
+      />
 
       <CalendarTime onChange={onChange} timeValue={value.calendarTime} />
       <a type="button" href="/appointments" onClick={goToAppointmentForm}>

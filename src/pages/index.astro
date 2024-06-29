@@ -9,7 +9,7 @@ const appointments = await db
   .innerJoin(Tutors, eq(Patients.tutorId, Tutors.id));
 
 const tutors = await db.select().from(Tutors);
-console.log({ tutors });
+console.log({ appointments });
 ---
 
 <Layout title="Turnos app">

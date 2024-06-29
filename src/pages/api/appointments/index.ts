@@ -115,6 +115,7 @@ export const POST: APIRoute = async ({ request }) => {
       ...appointment,
       isActive: true,
       patientId: patientId,
+      professionalId: "2345235",
     })
     .onConflictDoUpdate({
       target: Appointments.id,
