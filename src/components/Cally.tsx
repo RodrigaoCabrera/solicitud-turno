@@ -1,6 +1,12 @@
 import { useState, type ChangeEvent } from "react";
 import { CalendarDate, CalendarMonth } from "./Calendar";
-import { format, diffMinutes, isEqual } from "@formkit/tempo";
+import {
+  format,
+  diffMinutes,
+  isEqual,
+  addMonth,
+  monthEnd,
+} from "@formkit/tempo";
 import CalendarTime from "./CalendarTime.tsx";
 
 interface Appointmentdate {
@@ -51,7 +57,8 @@ function Picker({
   const [today, setToday] = useState(() => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
-    return format(now, "YYYY-MM-DD");
+
+    return now;
   });
 
   const availableDays = professionalData.map(
@@ -107,13 +114,13 @@ function Picker({
 
     return true;
   };
-
+  console.log(value.calendarDate);
   return (
     <div>
       <CalendarDate
         value={value.calendarDate}
-        min={today}
-        max="2024-12-31"
+        min={format(today, "YYYY-MM-DD")} // Dí a actual
+        max={format(monthEnd(addMonth(today, 1)), "YYYY-MM-DD")} // ültimo día del siguiente mes
         locale="es-ES"
         isDateDisallowed={isDateDisallowed}
         onChange={onChange}
