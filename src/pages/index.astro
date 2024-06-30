@@ -1,6 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { db, eq, Tutors, Patients, Appointments } from "astro:db";
+import {
+  db,
+  eq,
+  Tutors,
+  Patients,
+  Appointments,
+  Availability,
+  ProfessionalProfile,
+} from "astro:db";
 
 const appointments = await db
   .select()
@@ -8,8 +16,8 @@ const appointments = await db
   .innerJoin(Patients, eq(Appointments.patientId, Patients.id))
   .innerJoin(Tutors, eq(Patients.tutorId, Tutors.id));
 
-const tutors = await db.select().from(Tutors);
-console.log({ appointments });
+const availability = await db.select().from(ProfessionalProfile);
+console.log({ availability });
 ---
 
 <Layout title="Turnos app">

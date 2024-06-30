@@ -66,30 +66,7 @@ function Picker({
   );
 
   const isfilledSchedule = (date: Date) => {
-    // Filtrar los appointments que coincidan con el 'date' con el metodo isEqual
-
-    // Cálculo de la cantidad de sesiones disponibles por día según el sesionTime y el rango horario tanto AM como PM
-    const session = professionalData.filter(
-      (data) => data.Availability.dayOfWeek === date.getDay()
-    );
-
-    let sessionsAmount = 0;
-    const sessionStartAM = session[0].Availability.startTimeAM; //"09:00";
-    const sessionEndAM = session[0].Availability.endTimeAM; // "11:00";
-    sessionsAmount =
-      diffMinutes(
-        new Date(`${format(date, "YYYY-MM-DD")} ${sessionEndAM}`),
-        `${format(date, "YYYY-MM-DD")} ${sessionStartAM}`
-      ) / professionalData[0].ProfessionalProfile.sessionTime;
-
-    const sessionStartPM = session[0].Availability.startTimePM;
-    const sessionEndPM = session[0].Availability.endTimePM;
-    sessionsAmount +=
-      diffMinutes(
-        new Date(`${format(date, "YYYY-MM-DD")} ${sessionEndPM}`),
-        `${format(date, "YYYY-MM-DD")} ${sessionStartPM}`
-      ) / professionalData[0].ProfessionalProfile.sessionTime;
-
+    // Filtrar los appointments que coincidan con el 'date'
     const filteredAppointments = appointments.filter(
       (appointment: Appointments) => {
         const calenddarDate = format({
@@ -101,10 +78,38 @@ function Picker({
         return isEqual(calenddarDate, appointmentDate);
       }
     );
+
+    if (filteredAppointments.length <= 0) {
+      return false;
+    }
+
+    // Cálculo de la cantidad de sesiones disponibles por día según el sesionTime y el rango horario tanto AM como PM
+    const session = professionalData.filter(
+      (data) => data.Availability.dayOfWeek === date.getDay()
+    );
+    const availability: Availability = session[0].Availability;
+    let sessionsAmount = 0;
+    const sessionStartAM = availability.startTimeAM; //"09:00";
+    const sessionEndAM = availability.endTimeAM; // "11:00";
+    sessionsAmount =
+      diffMinutes(
+        new Date(`${format(date, "YYYY-MM-DD")} ${sessionEndAM}`),
+        `${format(date, "YYYY-MM-DD")} ${sessionStartAM}`
+      ) / professionalData[0].ProfessionalProfile.sessionTime;
+
+    const sessionStartPM = availability.startTimePM;
+    const sessionEndPM = availability.endTimePM;
+    sessionsAmount +=
+      diffMinutes(
+        new Date(`${format(date, "YYYY-MM-DD")} ${sessionEndPM}`),
+        `${format(date, "YYYY-MM-DD")} ${sessionStartPM}`
+      ) / professionalData[0].ProfessionalProfile.sessionTime;
+
     // Determinar si la cantidad de sesiones es igual a la cantidad de appointment
     const appointmentsAmount = filteredAppointments.length;
     return sessionsAmount === appointmentsAmount;
   };
+
   // Determinar cuantas sesiones tiene por dia segun la cantidad de minutos por sesion. Luego ver cuantos appointment tiene en ese dia de la semana, si ya hay existe la cantidad de sesiones diaria, ese día debe estar deshabilitado
   const isDateDisallowed = (date: Date) => {
     if (availableDays.length > 0 && availableDays.includes(date.getDay())) {
@@ -114,7 +119,6 @@ function Picker({
 
     return true;
   };
-  console.log(value.calendarDate);
   return (
     <div>
       <CalendarDate

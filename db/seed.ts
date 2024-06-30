@@ -37,11 +37,12 @@ export default async function () {
       email: "profesional@test.com",
       profession: "Pediatra",
       sessionTime: 30,
+      tuition: "1234",
     },
   ]);
   await db.insert(Availability).values([
     {
-      id: "111",
+      id: 1,
       dayOfWeek: 1, // 0-6 para representar días de la semana
       startTimeAM: "09:00", // Formato HH:MM
       endTimeAM: "09:30", // Formato HH:MM
@@ -51,7 +52,7 @@ export default async function () {
       professionalId: "2345235",
     },
     {
-      id: "222",
+      id: 2,
       dayOfWeek: 2, // 0-6 para representar días de la semana
       startTimeAM: "09:00", // Formato HH:MM
       endTimeAM: "11:00", // Formato HH:MM
