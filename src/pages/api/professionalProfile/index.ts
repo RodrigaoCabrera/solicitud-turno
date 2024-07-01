@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { format, diffMinutes } from "@formkit/tempo";
 import {
   array,
   object,
@@ -14,7 +15,7 @@ import {
   safeParse,
   picklist,
 } from "valibot";
-import { db, eq, ProfessionalProfile, Availability } from "astro:db";
+import { db, eq, ProfessionalProfile, Availability, NOW } from "astro:db";
 
 import { APIRoute } from "astro";
 
@@ -66,6 +67,14 @@ interface ProfessionalData {
   sessionTime: number;
 }
 
+interface Availability {
+  dayOfWeek: number;
+  startTimeAM: string;
+  endTimeAM: string;
+  startTimePM: string;
+  sessionAmount: number;
+}
+
 // Create id
 const generateId = (str: string) => {
   return createHash("sha256").update(str).digest("hex");
@@ -73,7 +82,7 @@ const generateId = (str: string) => {
 
 // Response
 const res = (
-  body: { message: string; data?: ProfessionalData },
+  body: { message: string; data?: Availability[] },
   {
     status,
     statusText,
@@ -111,10 +120,33 @@ export const POST: APIRoute = async ({ params, request }) => {
     .onConflictDoNothing();
 
   // Insert availability data
+
+  // Calculate sessionTime amount
+  const sessionTime = professionalProfile.sessionTime;
+
   const availabilityData = availability.map((data) => {
+    const sessionStartAM = data.startTimeAM; //"09:00";
+    const sessionEndAM = data.endTimeAM; // "11:00";
+    const sessionsAmountAM =
+      diffMinutes(
+        new Date(`${format(new Date(), "YYYY-MM-DD")} ${sessionEndAM}`),
+        `${format(new Date(), "YYYY-MM-DD")} ${sessionStartAM}`
+      ) / sessionTime;
+
+    const sessionStartPM = data.startTimePM;
+    const sessionEndPM = data.endTimePM;
+    const sessionsAmountPM =
+      diffMinutes(
+        new Date(`${format(new Date(), "YYYY-MM-DD")} ${sessionEndPM}`),
+        `${format(new Date(), "YYYY-MM-DD")} ${sessionStartPM}`
+      ) / sessionTime;
+
+    const sessionAmount = sessionsAmountAM + sessionsAmountPM;
+
     return {
       id: data.dayOfWeek,
       professionalId,
+      sessionAmount,
       ...data,
     };
   });
@@ -123,7 +155,7 @@ export const POST: APIRoute = async ({ params, request }) => {
   return res(
     {
       message: "Perfil profesional creado con éxito",
-      data: professionalProfile,
+      data: availabilityData,
     },
     { status: 200 }
   );

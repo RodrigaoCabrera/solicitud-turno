@@ -21,6 +21,7 @@ interface Availability {
   startTimePM: string; // Formato HH:MM
   endTimePM: string; // Formato HH:MM
   professionalId: string;
+  sessionAmount: number;
 }
 interface ProfessionalProfile {
   id: string;
@@ -83,31 +84,18 @@ function Picker({
       return false;
     }
 
-    // Cálculo de la cantidad de sesiones disponibles por día según el sesionTime y el rango horario tanto AM como PM
     const session = professionalData.filter(
       (data) => data.Availability.dayOfWeek === date.getDay()
     );
-    const availability: Availability = session[0].Availability;
-    let sessionsAmount = 0;
-    const sessionStartAM = availability.startTimeAM; //"09:00";
-    const sessionEndAM = availability.endTimeAM; // "11:00";
-    sessionsAmount =
-      diffMinutes(
-        new Date(`${format(date, "YYYY-MM-DD")} ${sessionEndAM}`),
-        `${format(date, "YYYY-MM-DD")} ${sessionStartAM}`
-      ) / professionalData[0].ProfessionalProfile.sessionTime;
 
-    const sessionStartPM = availability.startTimePM;
-    const sessionEndPM = availability.endTimePM;
-    sessionsAmount +=
-      diffMinutes(
-        new Date(`${format(date, "YYYY-MM-DD")} ${sessionEndPM}`),
-        `${format(date, "YYYY-MM-DD")} ${sessionStartPM}`
-      ) / professionalData[0].ProfessionalProfile.sessionTime;
-
-    // Determinar si la cantidad de sesiones es igual a la cantidad de appointment
-    const appointmentsAmount = filteredAppointments.length;
-    return sessionsAmount === appointmentsAmount;
+    for (let i = 0; i <= professionalData.length; i++) {
+      const availabilityObj = professionalData[i].Availability;
+      if (availabilityObj.dayOfWeek === date.getDay()) {
+        // Determinar si la cantidad de sesiones es igual a la cantidad de appointment
+        const appointmentsAmount = filteredAppointments.length;
+        return availabilityObj.sessionAmount === appointmentsAmount;
+      }
+    }
   };
 
   // Determinar cuantas sesiones tiene por dia segun la cantidad de minutos por sesion. Luego ver cuantos appointment tiene en ese dia de la semana, si ya hay existe la cantidad de sesiones diaria, ese día debe estar deshabilitado

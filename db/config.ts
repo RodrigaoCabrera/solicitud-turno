@@ -57,6 +57,7 @@ const Availability = defineTable({
     endTimeAM: column.text(), // Formato HH:MM
     startTimePM: column.text(), // Formato HH:MM
     endTimePM: column.text(), // Formato HH:MM
+    sessionAmount: column.number(),
 
     professionalId: column.text({
       references: () => ProfessionalProfile.columns.id,
