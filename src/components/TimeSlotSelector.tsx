@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { date } from "@formkit/tempo";
+import { date, isEqual } from "@formkit/tempo";
 
 interface Availability {
   id: number;
@@ -16,30 +16,39 @@ interface Availability {
   professionalId: string;
   sessionAmount: number;
 }
+interface Appointments {
+  id: string;
+  date: string;
+  isActive: boolean;
+  professionalId: string;
+  patientId: string;
+}
 
 interface Props {
   availability: Availability[];
+  appointments: Appointments[];
   sessionTime: number;
   value: {
-    calendarDate: string;
-    calendarTime: string;
+    calendarDate?: string;
+    calendarTime?: string;
   };
   onChange: (event: Event | ChangeEvent<HTMLInputElement>) => void;
 }
-
+interface Slots {
+  time: string;
+  appointmentExist: boolean;
+}
 const TimeSlotSelector: React.FC<Props> = ({
   availability,
+  appointments,
   sessionTime,
   value,
   onChange,
 }) => {
   const [timeType, setTimeType] = useState<"AM" | "PM">("AM");
-  const [slots, setSlots] = useState<string[]>([]);
+  const [slots, setSlots] = useState<Slots[]>([]);
 
   const getCurrentDateAvailability = (): Availability | undefined => {
-    if (!value.calendarDate) {
-      return;
-    }
     const currDate = date(value.calendarDate + "T00:00:00Z");
     return availability.find(
       (availabilityDay) => availabilityDay.dayOfWeek === currDate.getDay()
@@ -49,25 +58,31 @@ const TimeSlotSelector: React.FC<Props> = ({
   const generateTimeSlots = (
     availability: Availability,
     type: "AM" | "PM"
-  ): string[] => {
+  ): Slots[] => {
     const startTime =
       type === "AM" ? availability.startTimeAM : availability.startTimePM;
     const endTime =
       type === "AM" ? availability.endTimeAM : availability.endTimePM;
 
-    const start = new Date(`2000-01-01T${startTime}`);
-    const end = new Date(`2000-01-01T${endTime}`);
+    const start = new Date(`${value.calendarDate}T${startTime}`);
+    const end = new Date(`${value.calendarDate}T${endTime}`);
     const interval = sessionTime * 60 * 1000; // Convert to milliseconds
 
     const newSlots = [];
     let current = new Date(start);
+
     while (current < end) {
-      newSlots.push(
-        current.toLocaleTimeString("es-ES", {
+      // Verify if appointment exists
+      const appointmentExist = appointments.some((appointment) =>
+        isEqual(current, appointment.date)
+      );
+      newSlots.push({
+        time: current.toLocaleTimeString("es-ES", {
           hour: "2-digit",
           minute: "2-digit",
-        })
-      );
+        }),
+        appointmentExist,
+      });
       current = new Date(current.getTime() + interval);
     }
 
@@ -86,12 +101,6 @@ const TimeSlotSelector: React.FC<Props> = ({
   const handleTimeTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTimeType(e.target.id as "AM" | "PM");
   };
-
-  const currentDateAvailability = getCurrentDateAvailability();
-
-  if (!currentDateAvailability) {
-    return <p>No hay disponibilidad para la fecha seleccionada.</p>;
-  }
 
   return (
     <section className="time-slot-container">
@@ -120,13 +129,14 @@ const TimeSlotSelector: React.FC<Props> = ({
             <label>
               <input
                 type="radio"
-                id={slot}
+                id={slot.time}
                 name="calendarTime"
-                value={slot}
+                value={slot.time}
                 onChange={onChange}
-                defaultChecked={slot === value.calendarTime}
+                defaultChecked={slot.time === value.calendarTime}
+                disabled={slot.appointmentExist}
               />
-              <span>{slot}</span>
+              <span>{slot.time}</span>
             </label>
             <span className="selection"></span>
           </div>
