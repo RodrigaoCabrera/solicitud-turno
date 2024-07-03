@@ -12,22 +12,22 @@ import {
 
 // Get data from astro db
 const professionalData = await db
-  .select()
-  .from(Availability)
-  .innerJoin(
-    ProfessionalProfile,
-    eq(Availability.professionalId, ProfessionalProfile.id)
-  );
+  .select({
+    id: ProfessionalProfile.id,
+    sessionTime: ProfessionalProfile.sessionTime,
+  })
+  .from(ProfessionalProfile);
+
 const appointments = await db.select().from(Appointments);
 
-console.log(professionalData);
-console.log(appointments);
+const availability = await db.select().from(Availability);
 ---
 
 <Layout title="Elegir fecha y hora">
   <Cally
     client:only="react"
-    professionalData={professionalData}
+    professionalData={professionalData[0]}
+    availability={availability}
     appointments={appointments}
   />
 </Layout>

@@ -7,14 +7,14 @@ import {
   addMonth,
   monthEnd,
 } from "@formkit/tempo";
-import CalendarTime from "./CalendarTime.tsx";
+import TimeSlotSelector from "./TimeSlotSelector.tsx";
 
 interface Appointmentdate {
   calendarDate: string;
   calendarTime: string;
 }
 interface Availability {
-  id: string;
+  id: number;
   dayOfWeek: number; // 0-6 para representar días de la semana
   startTimeAM: string; // Formato HH:MM
   endTimeAM: string; // Formato HH:MM
@@ -40,19 +40,21 @@ interface Appointments {
   patientId: string;
 }
 interface ProfessionalData {
-  Availability: Availability;
-  ProfessionalProfile: ProfessionalProfile;
+  id: string;
+  sessionTime: number;
 }
 
 function Picker({
   value,
   onChange,
   professionalData,
+  availability,
   appointments,
 }: {
   value: Appointmentdate;
   onChange: (event: Event | ChangeEvent<HTMLInputElement>) => void;
-  professionalData: ProfessionalData[];
+  professionalData: ProfessionalData;
+  availability: Availability[];
   appointments: Appointments[];
 }) {
   const [today, setToday] = useState(() => {
@@ -62,8 +64,8 @@ function Picker({
     return now;
   });
 
-  const availableDays = professionalData.map(
-    (data) => data.Availability.dayOfWeek
+  const availableDays = availability.map(
+    (data: Availability) => data.dayOfWeek
   );
 
   const isfilledSchedule = (date: Date) => {
@@ -84,12 +86,12 @@ function Picker({
       return false;
     }
 
-    const session = professionalData.filter(
-      (data) => data.Availability.dayOfWeek === date.getDay()
+    const session = availability.filter(
+      (data: Availability) => data.dayOfWeek === date.getDay()
     );
 
-    for (let i = 0; i <= professionalData.length; i++) {
-      const availabilityObj = professionalData[i].Availability;
+    for (let i = 0; i <= availability.length; i++) {
+      const availabilityObj = availability[i];
       if (availabilityObj.dayOfWeek === date.getDay()) {
         // Determinar si la cantidad de sesiones es igual a la cantidad de appointment
         const appointmentsAmount = filteredAppointments.length;
@@ -125,12 +127,14 @@ function Picker({
 
 function Cally({
   professionalData,
+  availability,
   appointments,
 }: {
-  professionalData: ProfessionalData[];
+  professionalData: ProfessionalData;
+  availability: Availability[];
   appointments: Appointments[];
 }) {
-  const [value, setValue] = useState((): Appointmentdate => {
+  const [value, setValue] = useState(() => {
     const storedDate = localStorage.getItem("storedDate");
 
     if (storedDate) {
@@ -149,9 +153,10 @@ function Cally({
   const onChange = (event: Event | ChangeEvent<HTMLInputElement>) => {
     const e = event.target as HTMLInputElement;
 
+    const inputName = e.name || e.id;
     const newCalendardate = {
       ...value,
-      [e.id]: e.value,
+      [inputName]: e.value,
     };
 
     setValue(newCalendardate);
@@ -171,10 +176,19 @@ function Cally({
         value={value}
         onChange={onChange}
         professionalData={professionalData}
+        availability={availability}
         appointments={appointments}
       />
 
-      <CalendarTime onChange={onChange} timeValue={value.calendarTime} />
+      {professionalData && (
+        <TimeSlotSelector
+          //onChange={onChange}
+          value={value}
+          availability={availability}
+          sessionTime={professionalData?.sessionTime}
+          onChange={onChange}
+        />
+      )}
       <a type="button" href="/appointments" onClick={goToAppointmentForm}>
         Confirmar
       </a>
