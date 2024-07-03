@@ -61,7 +61,7 @@ const TimeSlotSelector: React.FC<Props> = ({
 
     const newSlots = [];
     let current = new Date(start);
-    while (current <= end) {
+    while (current < end) {
       newSlots.push(
         current.toLocaleTimeString("es-ES", {
           hour: "2-digit",
