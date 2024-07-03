@@ -53,6 +53,7 @@
 
 <script>
   const date = localStorage.getItem("storedDate") || "";
+  const professionalId = localStorage.getItem("professionalId") || "";
 
   // Interfaz para Tutor
   interface Tutor {
@@ -75,6 +76,7 @@
   // Interfaz para Solicitud de Cita
   interface AppointmentRequest {
     date: string;
+    professionalId: string;
   }
 
   const submitForm = async (event: Event) => {
@@ -102,6 +104,7 @@
 
     const appointment: AppointmentRequest = {
       date,
+      professionalId,
     };
 
     try {
@@ -120,6 +123,7 @@
       const data = await response.json();
       if (response.ok) {
         localStorage.removeItem("storedDate");
+        localStorage.removeItem("professionalId");
         form.reset();
         window.location.href = `/appointments/${data.id}`;
       } else {

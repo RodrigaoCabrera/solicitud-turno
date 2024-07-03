@@ -167,6 +167,7 @@ function Cally({
 
     const newDate = format(t, "YYYY-MM-DDTHH:mm:ssZ");
     localStorage.setItem("storedDate", newDate);
+    localStorage.setItem("professionalId", professionalData.id);
   };
 
   return (
