@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
 import { object, string, boolean, email, number, safeParse } from "valibot";
 import type { APIRoute } from "astro";
-import { db, eq, Tutors, Patients, Appointments } from "astro:db";
+import { db, eq, Tutors, Patients, Appointments, Availability } from "astro:db";
+import { date } from "@formkit/tempo";
 
 // Request schema
 const appoinmentDataSchema = object({
@@ -47,8 +48,24 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (!success) return res({ message: "Bad request" }, { status: 400 });
 
+  // Verify if there's availability for that day
+  const availableDays = await db
+    .select({ dayOfWeek: Availability.dayOfWeek })
+    .from(Availability);
+
   const data = output;
-  const { patient, tutor, appointment } = data;
+  const { patient, tutor, appointment } = data; // Datos de la request
+
+  const isAvailableDay = availableDays.some((day) => {
+    return day.dayOfWeek === date(appointment.date).getDay();
+  });
+
+  if (!isAvailableDay) {
+    return res(
+      { message: "No existe disponibilidad para la fecha solicitada" },
+      { status: 409 }
+    );
+  }
 
   const appointmentId = generateId(appointment.date);
   const patientId = generateId(patient.dni);

@@ -174,7 +174,6 @@ function Cally({
 
   return (
     <>
-      <p>Value is: {value.calendarDate}</p>
       <Picker
         value={value}
         onChange={onChange}
