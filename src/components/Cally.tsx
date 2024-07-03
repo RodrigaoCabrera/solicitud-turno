@@ -10,8 +10,8 @@ import {
 import TimeSlotSelector from "./TimeSlotSelector.tsx";
 
 interface Appointmentdate {
-  calendarDate: string;
-  calendarTime: string;
+  calendarDate?: string;
+  calendarTime?: string;
 }
 interface Availability {
   id: number;
@@ -144,22 +144,24 @@ function Cally({
       };
     }
 
-    return {
-      calendarDate: "",
-      calendarTime: "",
-    };
+    return {};
   });
+
+  const [isSelectedDate, setIsSelectedDate] = useState(false);
 
   const onChange = (event: Event | ChangeEvent<HTMLInputElement>) => {
     const e = event.target as HTMLInputElement;
 
     const inputName = e.name || e.id;
-    const newCalendardate = {
+    const newCalendarDate = {
       ...value,
       [inputName]: e.value,
     };
 
-    setValue(newCalendardate);
+    setValue(newCalendarDate);
+
+    // To active 'Confirmate' button when the user selects a date
+    setIsSelectedDate(!!newCalendarDate.calendarTime);
   };
 
   const goToAppointmentForm = () => {
@@ -181,18 +183,23 @@ function Cally({
         appointments={appointments}
       />
 
-      {professionalData && (
+      {professionalData && value.calendarDate && (
         <TimeSlotSelector
           //onChange={onChange}
           value={value}
           availability={availability}
           sessionTime={professionalData?.sessionTime}
+          appointments={appointments}
           onChange={onChange}
         />
       )}
-      <a type="button" href="/appointments" onClick={goToAppointmentForm}>
-        Confirmar
-      </a>
+      <button
+        onClick={goToAppointmentForm}
+        type="button"
+        disabled={!isSelectedDate}
+      >
+        <a href="/appointments">Confirmar</a>
+      </button>
     </>
   );
 }
