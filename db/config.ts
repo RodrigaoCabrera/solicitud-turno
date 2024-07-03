@@ -44,7 +44,7 @@ const ProfessionalProfile = defineTable({
     lastName: column.text(),
     email: column.text({ unique: true }),
     profession: column.text(),
-    sessionTime: column.number(),
+    sessionTime: column.number(), // TODO: Move to Availability table
     tuition: column.text(),
   },
 });
