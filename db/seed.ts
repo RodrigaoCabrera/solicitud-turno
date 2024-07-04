@@ -14,7 +14,7 @@ export default async function () {
       aboutMe:
         "Dr. Bellamy Nicholas is a top specialist at London Bridge Hospital at London. He has achieved several awards and recognition for is contribution and service in his own field. He is available for private consultation.",
       address: "Irastorza 910 (3460) Curuzú Cuatiá, Corrientes  ",
-      sessionTime: 30,
+      sessionTime: 15,
     },
   ]);
 
