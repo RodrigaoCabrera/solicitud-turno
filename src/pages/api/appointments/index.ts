@@ -1,15 +1,56 @@
 import { createHash } from "node:crypto";
-import { object, string, boolean, email, number, safeParse } from "valibot";
+import {
+  object,
+  string,
+  boolean,
+  email,
+  number,
+  safeParse,
+  pipe,
+  nonEmpty,
+  toMinValue,
+  maxLength,
+  minLength,
+  hash,
+} from "valibot";
 import type { APIRoute } from "astro";
 import { db, eq, Tutors, Patients, Appointments, Availability } from "astro:db";
 import { date } from "@formkit/tempo";
+
+// Email type
+const Email = pipe(
+  string("The email must be a valid email address"),
+  nonEmpty("Please enter your email."),
+  email("The email is badly formatted.")
+);
+
+// DNI type
+const DNI = pipe(
+  string(),
+  maxLength(8, "The DNI must not exceed 8 characters.")
+);
+
+// phone type
+const Phone = pipe(
+  string(),
+  minLength(10, "El número debe tener al menos 10 dígitos"),
+  maxLength(13, "The DNI must not exceed 8 characters.")
+);
+
+// Hash ID
+const HashId = pipe(
+  string(),
+  hash(["sha256"], "The specified professionalId is invalid.")
+);
 
 // Request schema
 const appoinmentDataSchema = object({
   patient: object({
     firstName: string(),
     lastName: string(),
-    dni: string(),
+    dni: DNI,
+    age: number(),
+    gender: string(),
     isNewPatient: boolean(),
     healthInsurance: string(),
   }),
@@ -17,13 +58,15 @@ const appoinmentDataSchema = object({
   tutor: object({
     firstName: string(),
     lastName: string(),
-    email: string(),
-    phone: number(),
+    dni: DNI,
+    email: Email,
+    phone: Phone,
+    relationshipWithThePatient: string(),
   }),
 
   appointment: object({
     date: string(),
-    professionalId: string(),
+    professionalId: HashId,
   }),
 });
 

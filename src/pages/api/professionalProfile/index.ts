@@ -14,6 +14,8 @@ import {
   isoTime,
   safeParse,
   picklist,
+  minLength,
+  maxLength,
 } from "valibot";
 import { db, eq, ProfessionalProfile, Availability, NOW } from "astro:db";
 
@@ -24,6 +26,14 @@ const ProfessionalEmail = pipe(
   nonEmpty("Please enter your email."),
   email("The email is badly formatted.")
 );
+
+// phone type
+const Phone = pipe(
+  string(),
+  minLength(10, "El número debe tener al menos 10 dígitos"),
+  maxLength(13, "The DNI must not exceed 8 characters.")
+);
+
 const SessionTimeOptions = picklist(
   [10, 15, 30, 40, 1],
   "SessioTime mst be one of the following options: 10, 15, 30, 40 minutes, or 1 hours"
@@ -42,8 +52,11 @@ const professionalDataSchema = object({
     firstName: string(),
     lastName: string(),
     email: ProfessionalEmail,
-    tuition: string(),
+    phone: Phone,
+    registrationNumber: string(),
     profession: string(),
+    aboutMe: string(),
+    address: string(),
     sessionTime: SessionTimeOptions,
   }),
 
@@ -62,7 +75,7 @@ interface ProfessionalData {
   firstName: string;
   lastName: string;
   email: string;
-  tuition: string;
+  registrationNumber: string;
   profession: string;
   sessionTime: number;
 }
@@ -82,7 +95,7 @@ const generateId = (str: string) => {
 
 // Response
 const res = (
-  body: { message: string; data?: Availability[] },
+  body: { message: string; professionalId?: string },
   {
     status,
     statusText,
@@ -96,6 +109,7 @@ export const POST: APIRoute = async ({ params, request }) => {
     professionalDataSchema,
     await request.json()
   );
+  console.log(output);
 
   if (!success)
     return res(
@@ -108,7 +122,7 @@ export const POST: APIRoute = async ({ params, request }) => {
   const { professionalProfile, availability } = data;
 
   // Genereta id for professional
-  const professionalId = generateId(professionalProfile.tuition);
+  const professionalId = generateId(professionalProfile.registrationNumber);
 
   // Insert professional data
   await db
@@ -155,7 +169,7 @@ export const POST: APIRoute = async ({ params, request }) => {
   return res(
     {
       message: "Perfil profesional creado con éxito",
-      data: availabilityData,
+      professionalId,
     },
     { status: 200 }
   );

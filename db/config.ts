@@ -1,13 +1,14 @@
 import { column, defineDb, defineTable } from "astro:db";
-import { string } from "valibot";
 
 const Tutors = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),
     firstName: column.text(),
     lastName: column.text(),
-    email: column.text({ unique: true }),
-    phone: column.number(),
+    dni: column.text({ unique: true }),
+    email: column.text(),
+    phone: column.text(),
+    relationshipWithThePatient: column.text(),
   },
 });
 const Patients = defineTable({
@@ -16,6 +17,8 @@ const Patients = defineTable({
     firstName: column.text(),
     lastName: column.text(),
     dni: column.text(),
+    age: column.number(),
+    gender: column.text(),
     isNewPatient: column.boolean(),
     healthInsurance: column.text(),
 
@@ -43,9 +46,12 @@ const ProfessionalProfile = defineTable({
     firstName: column.text(),
     lastName: column.text(),
     email: column.text({ unique: true }),
+    phone: column.text({ unique: true }),
     profession: column.text(),
-    sessionTime: column.number(), // TODO: Move to Availability table
-    tuition: column.text(),
+    aboutMe: column.text(),
+    address: column.text(),
+    sessionTime: column.number(),
+    registrationNumber: column.text({ unique: true }),
   },
 });
 
