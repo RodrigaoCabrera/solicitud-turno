@@ -123,22 +123,21 @@ const TimeSlotSelector: React.FC<Props> = ({
         />
       </div>
 
-      {slots.map((slot, index) => (
+      {slots.map((slot) => (
         <>
-          <div className="radio-input" key={index}>
-            <label>
-              <input
-                type="radio"
-                id={slot.time}
-                name="calendarTime"
-                value={slot.time}
-                onChange={onChange}
-                defaultChecked={slot.time === value.calendarTime}
-                disabled={slot.appointmentExist}
-              />
+          <div className="radio-input" key={slot.time}>
+            <input
+              type="radio"
+              id={slot.time}
+              name="calendarTime"
+              value={slot.time}
+              onChange={onChange}
+              defaultChecked={slot.time === value.calendarTime}
+              disabled={slot.appointmentExist}
+            />
+            <label htmlFor={slot.time}>
               <span>{slot.time}</span>
             </label>
-            <span className="selection"></span>
           </div>
         </>
       ))}
