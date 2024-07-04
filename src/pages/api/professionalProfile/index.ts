@@ -17,7 +17,7 @@ import {
   minLength,
   maxLength,
 } from "valibot";
-import { db, eq, ProfessionalProfile, Availability, NOW } from "astro:db";
+import { db, eq, ProfessionalProfile, Availability, or } from "astro:db";
 
 import { APIRoute } from "astro";
 
@@ -30,8 +30,8 @@ const ProfessionalEmail = pipe(
 // phone type
 const Phone = pipe(
   string(),
-  minLength(10, "El número debe tener al menos 10 dígitos"),
-  maxLength(13, "The DNI must not exceed 8 characters.")
+  minLength(10, "The phone number must be at least 10 characters"),
+  maxLength(13, "The phone number must not exceed 8 characters.")
 );
 
 const SessionTimeOptions = picklist(
@@ -109,7 +109,6 @@ export const POST: APIRoute = async ({ params, request }) => {
     professionalDataSchema,
     await request.json()
   );
-  console.log(output);
 
   if (!success)
     return res(
@@ -120,6 +119,54 @@ export const POST: APIRoute = async ({ params, request }) => {
   // Obtener los datos del profesional
   const data = output;
   const { professionalProfile, availability } = data;
+
+  // Verify if there's a profile with the same email o phone number
+  const existingProfile = await db
+    .select({
+      email: ProfessionalProfile.email,
+      registrationNumber: ProfessionalProfile.registrationNumber,
+      phone: ProfessionalProfile.phone,
+    })
+    .from(ProfessionalProfile)
+    .where(
+      or(
+        eq(ProfessionalProfile.email, output.professionalProfile.email),
+        eq(
+          ProfessionalProfile.registrationNumber,
+          output.professionalProfile.registrationNumber
+        ),
+        eq(ProfessionalProfile.phone, output.professionalProfile.phone)
+      )
+    );
+
+  // Existing email error message
+  if (existingProfile.length > 0) {
+    if (existingProfile[0].email === output.professionalProfile.email) {
+      return res(
+        {
+          message: `The email '${existingProfile[0].email}' is already registered`,
+        },
+        { status: 409 }
+      );
+    } else if (
+      existingProfile[0].registrationNumber ===
+      output.professionalProfile.registrationNumber
+    ) {
+      return res(
+        {
+          message: `The registration number: '${output.professionalProfile.registrationNumber}' is already registered`,
+        },
+        { status: 409 }
+      );
+    } else {
+      return res(
+        {
+          message: `The phone number: '${output.professionalProfile.phone}' is already registered`,
+        },
+        { status: 409 }
+      );
+    }
+  }
 
   // Genereta id for professional
   const professionalId = generateId(professionalProfile.registrationNumber);
