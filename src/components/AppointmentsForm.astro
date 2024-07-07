@@ -13,21 +13,42 @@
     <label for="patientDni">DNI:</label>
     <input type="text" id="patientDni" name="patientDni" />
   </div>
+  <div>
+    <label for="patientAge">Edad:</label>
+    <input type="tel" id="patientAge" name="patientAge" />
+  </div>
+  <div>
+    <label for="patientGender">Género:</label>
+    <select name="patientGender" id="patientGender">
+      <option value="female">Femenino</option>
+      <option value="male">Masculino</option>
+      <option value="another">Otro</option>
+    </select>
+  </div>
 
   <div>
-    <label for="healthInsurance">Seguro Médico (si aplica):</label>
+    <label for="healthInsurance">Seguro Médico</label>
     <input type="text" id="healthInsurance" name="healthInsurance" />
   </div>
 
   <div>
-    <label for="isNewPatient">Paciente Nuevo? (Si/No):</label>
-    <select id="isNewPatient" name="isNewPatient" required>
-      <option value="true">Si</option>
-      <option value="false">No</option>
-    </select>
+    <label for="regularPatient">Paciente regular</label>
+    <input
+      type="radio"
+      name="patientType"
+      id="regularPatient"
+      value="Paciente regular"
+    />
+    <label for="newPatient">Es la primera vez</label>
+    <input
+      type="radio"
+      name="patientType"
+      id="newPatient"
+      value="Paciente nuevo"
+    />
   </div>
 
-  <h3>Datos del Tutor</h3>
+  <h3 class="mt-8">Datos del Tutor</h3>
   <div>
     <label for="tutorFirstName">Nombre:</label>
     <input type="text" id="tutorFirstName" name="tutorFirstName" />
@@ -37,109 +58,132 @@
     <input type="text" id="tutorLastName" name="tutorLastName" />
   </div>
   <div>
-    <label for="tutorEmail">Correo Electrónico:</label>
+    <label for="tutorDni">DNI:</label>
+    <input type="text" id="tutorDni" name="tutorDni" />
+  </div>
+  <div>
+    <label for="tutorEmail">Email:</label>
     <input type="email" id="tutorEmail" name="tutorEmail" />
   </div>
   <div>
-    <label for="tutorPhone">Teléfono:</label>
-    <input type="tel" id="tutorPhone" name="tutorPhone" />
+    <label for="tutorPhone">Número de teléfono:</label>
+    <input type="text" id="tutorPhone" name="tutorPhone" />
+  </div>
+  <div>
+    <label for="relationshipWithThePatient">Vínculo con el paciente:</label>
+    <input
+      type="text"
+      id="relationshipWithThePatient"
+      name="relationshipWithThePatient"
+    />
   </div>
 
   <section>
     <p id="errorMessage"></p>
   </section>
   <button type="submit">Enviar Solicitud</button>
-</form>
 
-<script>
-  const date = localStorage.getItem("storedDate") || "";
-  const professionalId = localStorage.getItem("professionalId") || "";
+  <script>
+    const date = localStorage.getItem("storedDate") || "";
+    const professionalId = localStorage.getItem("professionalId") || "";
 
-  // Interfaz para Tutor
-  interface Tutor {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: number;
-  }
-
-  // Interfaz para Paciente
-  interface Patient {
-    firstName: string;
-    lastName: string;
-    dni?: string; // Opcional
-    isNewPatient: boolean;
-    healthInsurance?: string; // Opcional
-    tutorId?: string; // Opcional (relación con Tutor)
-  }
-
-  // Interfaz para Solicitud de Cita
-  interface AppointmentRequest {
-    date: string;
-    professionalId: string;
-  }
-
-  const submitForm = async (event: Event) => {
-    event.preventDefault();
-
-    const form = event.target as HTMLFormElement;
-    const formData = new FormData(form);
-
-    // TODO: Create function to get form data
-    const patient: Patient = {
-      firstName: formData.get("patientFirstName") as string,
-      lastName: formData.get("patientLastName") as string,
-      dni: formData.get("patientDni") as string,
-      isNewPatient: formData.get("isNewPatient") === "true",
-      healthInsurance: formData.get("healthInsurance") as string,
-    };
-
-    const tutor: Tutor = {
-      // Datos del tutor son opcionales
-      firstName: (formData.get("tutorFirstName") as string) || "",
-      lastName: (formData.get("tutorLastName") as string) || "",
-      email: (formData.get("tutorEmail") as string) || "",
-      phone: parseInt((formData.get("tutorPhone") as string) || "0"),
-    };
-
-    const appointment: AppointmentRequest = {
-      date,
-      professionalId,
-    };
-
-    try {
-      const response = await fetch("/api/appointments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          patient,
-          tutor,
-          appointment,
-        }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.removeItem("storedDate");
-        localStorage.removeItem("professionalId");
-        form.reset();
-        window.location.href = `/appointments/${data.id}`;
-      } else {
-        const $errorMessage = document.querySelector(
-          "#errorMessage"
-        ) as HTMLElement;
-
-        if ($errorMessage) $errorMessage.innerText = data.message;
-      }
-    } catch (error) {
-      // TODO: handle errors
-      console.log("Hubo un error al enviar la solicitud de turno.");
+    // Interfaz para Tutor
+    interface Tutor {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+      dni: string;
+      relationshipWithThePatient: string;
     }
-  };
 
-  const $form = document.querySelector("form");
+    // Interfaz para Paciente
+    interface Patient {
+      firstName: string;
+      lastName: string;
+      dni: string;
+      age: number;
+      gender: string;
+      type: string;
+      healthInsurance?: string;
+    }
 
-  $form?.addEventListener("submit", submitForm);
-</script>
+    // Interfaz para Solicitud de Cita
+    interface AppointmentRequest {
+      date: string;
+      professionalId: string;
+    }
+
+    const submitForm = async (event: Event) => {
+      event.preventDefault();
+
+      const form = event.target as HTMLFormElement;
+      const formData = new FormData(form);
+
+      // TODO: Create function to get form data
+      const patient: Patient = {
+        firstName: formData.get("patientFirstName") as string,
+        lastName: formData.get("patientLastName") as string,
+        dni: formData.get("patientDni") as string,
+        age: Number(formData.get("patientAge")),
+        gender: formData.get("patientGender") as string,
+        type: formData.get("patientType") as string,
+        healthInsurance: formData.get("healthInsurance") as string,
+      };
+
+      console.log(patient.type);
+
+      const tutor: Tutor = {
+        // Datos del tutor son opcionales
+        firstName: (formData.get("tutorFirstName") as string) || "",
+        lastName: (formData.get("tutorLastName") as string) || "",
+        email: (formData.get("tutorEmail") as string) || "",
+        phone: (formData.get("tutorPhone") as string) || "0",
+        dni: formData.get("patientDni") as string,
+        relationshipWithThePatient: formData.get(
+          "relationshipWithThePatient"
+        ) as string,
+      };
+
+      const appointment: AppointmentRequest = {
+        date,
+        professionalId,
+      };
+
+      try {
+        const response = await fetch("/api/appointments", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            patient,
+            tutor,
+            appointment,
+          }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.removeItem("storedDate");
+          localStorage.removeItem("professionalId");
+          form.reset();
+          window.location.href = `/appointments/${data.id}`;
+        } else {
+          const $errorMessage = document.querySelector(
+            "#errorMessage"
+          ) as HTMLElement;
+
+          if ($errorMessage) $errorMessage.innerText = data.message;
+        }
+      } catch (error) {
+        // TODO: handle errors
+        console.log("Hubo un error al enviar la solicitud de turno.");
+      }
+    };
+
+    const $form = document.querySelector("form");
+
+    $form?.addEventListener("submit", submitForm);
+  </script>
+</form>
