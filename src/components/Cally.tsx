@@ -72,13 +72,13 @@ function Picker({
     // Filtrar los appointments que coincidan con el 'date'
     const filteredAppointments = appointments.filter(
       (appointment: Appointments) => {
-        const calenddarDate = format({
+        const calendarDate = format({
           date,
           format: "YYYY-MM-DD",
           tz: "Pacific/Chatham",
         });
         const appointmentDate = format(appointment.date, "YYYY-MM-DD");
-        return isEqual(calenddarDate, appointmentDate);
+        return isEqual(calendarDate, appointmentDate);
       }
     );
 
@@ -98,16 +98,21 @@ function Picker({
         return availabilityObj.sessionAmount === appointmentsAmount;
       }
     }
+
+    return false;
   };
 
   // Determinar cuantas sesiones tiene por dia segun la cantidad de minutos por sesion. Luego ver cuantos appointment tiene en ese dia de la semana, si ya hay existe la cantidad de sesiones diaria, ese día debe estar deshabilitado
   const isDateDisallowed = (date: Date) => {
-    if (availableDays.length > 0 && availableDays.includes(date.getDay())) {
-      if (isfilledSchedule(date)) return true;
-      return false;
+    if (availableDays.length <= 0) {
+      return true;
     }
 
-    return true;
+    if (!availableDays.includes(date.getDay())) {
+      return true;
+    }
+
+    return isfilledSchedule(date);
   };
   return (
     <div>
