@@ -6,7 +6,7 @@ const Tutors = defineTable({
     firstName: column.text(),
     lastName: column.text(),
     dni: column.text({ unique: true }),
-    email: column.text(),
+    email: column.text({ unique: true }),
     phone: column.text(),
     relationshipWithThePatient: column.text(),
   },
@@ -19,7 +19,7 @@ const Patients = defineTable({
     dni: column.text(),
     age: column.number(),
     gender: column.text(),
-    isNewPatient: column.boolean(),
+    type: column.text(),
     healthInsurance: column.text(),
 
     tutorId: column.text({ references: () => Tutors.columns.id }),
@@ -29,7 +29,7 @@ const Patients = defineTable({
 const Appointments = defineTable({
   columns: {
     id: column.text({ primaryKey: true }),
-    date: column.text(),
+    date: column.date(),
     isActive: column.boolean(),
 
     patientId: column.text({ references: () => Patients.columns.id }),
