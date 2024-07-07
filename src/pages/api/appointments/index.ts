@@ -12,10 +12,20 @@ import {
   maxLength,
   minLength,
   hash,
+  picklist,
+  date as dateType,
 } from "valibot";
 import type { APIRoute } from "astro";
-import { db, eq, Tutors, Patients, Appointments, Availability } from "astro:db";
-import { date } from "@formkit/tempo";
+import {
+  db,
+  eq,
+  Tutors,
+  Patients,
+  Appointments,
+  Availability,
+  ProfessionalProfile,
+} from "astro:db";
+import { date, format } from "@formkit/tempo";
 
 // Email type
 const Email = pipe(
@@ -27,7 +37,14 @@ const Email = pipe(
 // DNI type
 const DNI = pipe(
   string(),
+  minLength(8, "The DNI must be at least 8 characters."),
   maxLength(8, "The DNI must not exceed 8 characters.")
+);
+
+// Patient type
+const PatientType = picklist(
+  ["Paciente regular", "Paciente nuevo"],
+  "The patient type mst be one of the following options: Paciente regular or Paciente nuevo"
 );
 
 // phone type
@@ -43,6 +60,12 @@ const HashId = pipe(
   hash(["sha256"], "The specified professionalId is invalid.")
 );
 
+// Date type
+const DateType = pipe(
+  dateType("The date must be a valid ISO 8601 date string"),
+  toMinValue(new Date())
+);
+
 // Request schema
 const appoinmentDataSchema = object({
   patient: object({
@@ -51,7 +74,7 @@ const appoinmentDataSchema = object({
     dni: DNI,
     age: number(),
     gender: string(),
-    isNewPatient: boolean(),
+    type: PatientType,
     healthInsurance: string(),
   }),
 
@@ -65,7 +88,7 @@ const appoinmentDataSchema = object({
   }),
 
   appointment: object({
-    date: string(),
+    date: DateType,
     professionalId: HashId,
   }),
 });
@@ -84,12 +107,24 @@ const res = (
 ) => new Response(JSON.stringify(body), { status, statusText, headers });
 
 export const POST: APIRoute = async ({ request }) => {
-  const { success, output } = safeParse(
-    appoinmentDataSchema,
-    await request.json()
+  const appointmentRequest = await request.json();
+
+  // Convert appointment date a Date object
+  appointmentRequest.appointment.date = new Date(
+    appointmentRequest.appointment.date
   );
 
-  if (!success) return res({ message: "Bad request" }, { status: 400 });
+  // Validate appointment data
+  const { success, output, issues } = safeParse(
+    appoinmentDataSchema,
+    appointmentRequest
+  );
+
+  if (!success)
+    return res(
+      { message: `Bad request: ${issues[0].message}` },
+      { status: 400 }
+    );
 
   // Verify if there's availability for that day
   const availableDays = await db
@@ -98,6 +133,21 @@ export const POST: APIRoute = async ({ request }) => {
 
   const data = output;
   const { patient, tutor, appointment } = data; // Datos de la request
+
+  // Verify if there's a  professional profile with professionalId of the request
+  const professionalProfile = await db
+    .select({ id: ProfessionalProfile.id })
+    .from(ProfessionalProfile)
+    .where(eq(ProfessionalProfile.id, output.appointment.professionalId));
+
+  if (professionalProfile.length <= 0) {
+    return res(
+      {
+        message: `No existe ningún perfil profesional con el professionalId: ${output.appointment.professionalId}`,
+      },
+      { status: 400 }
+    );
+  }
 
   const isAvailableDay = availableDays.some((day) => {
     return day.dayOfWeek === date(appointment.date).getDay();
@@ -110,9 +160,9 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  const appointmentId = generateId(appointment.date);
+  const appointmentId = generateId(JSON.stringify(appointment.date));
   const patientId = generateId(patient.dni);
-  const tutorId = generateId(tutor.email);
+  const tutorId = generateId(tutor.dni);
 
   // Check that patient does not has a appointment
   const existingAppointment = await db
@@ -127,7 +177,6 @@ export const POST: APIRoute = async ({ request }) => {
       { status: 409 }
     ); // 409 Conflict
   }
-
   // Check if exist a active date
   const existingAppointmentDate = await db
     .select()
@@ -167,7 +216,6 @@ export const POST: APIRoute = async ({ request }) => {
       tutorId,
     })
     .onConflictDoUpdate({ target: Patients.id, set: { ...patient } });
-
   // Add tutor data
   await db
     .insert(Appointments)
