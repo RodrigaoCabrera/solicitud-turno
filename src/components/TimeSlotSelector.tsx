@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { date, isEqual } from "@formkit/tempo";
+import { date, format, isEqual } from "@formkit/tempo";
 
 interface Availability {
   id: number;
@@ -45,13 +45,25 @@ const TimeSlotSelector: React.FC<Props> = ({
   value,
   onChange,
 }) => {
-  const [timeType, setTimeType] = useState<"AM" | "PM">("AM");
+  const [timeType, setTimeType] = useState<"AM" | "PM">(() => {
+    if (value.calendarTime) {
+      const formattedTime = format(
+        new Date(`${value.calendarDate} ${value.calendarTime}`),
+        "A"
+      )
+        .split(".")
+        .join("")
+        .replace(/\s+/g, "");
+      return formattedTime as "AM" | "PM";
+    }
+    return "AM";
+  });
   const [slots, setSlots] = useState<Slots[]>([]);
 
   const getCurrentDateAvailability = (): Availability | undefined => {
-    const currDate = date(value.calendarDate + "T00:00:00Z");
+    const selectedDate = date(value.calendarDate + "T00:00:00Z");
     return availability.find(
-      (availabilityDay) => availabilityDay.dayOfWeek === currDate.getDay()
+      (availabilityDay) => availabilityDay.dayOfWeek === selectedDate.getDay()
     );
   };
 

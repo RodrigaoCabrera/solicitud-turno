@@ -139,7 +139,7 @@ function Cally({
   availability: Availability[];
   appointments: Appointments[];
 }) {
-  const [value, setValue] = useState(() => {
+  const [value, setValue] = useState<Appointmentdate>(() => {
     const storedDate = localStorage.getItem("storedDate");
 
     if (storedDate) {
