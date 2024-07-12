@@ -2,13 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import Cally from "../../components/Cally.tsx";
 
-import {
-  db,
-  eq,
-  ProfessionalProfile,
-  Availability,
-  Appointments,
-} from "astro:db";
+import { db, ProfessionalProfile, Availability, Appointments } from "astro:db";
 
 // Get data from astro db
 const professionalData = await db
@@ -24,10 +18,16 @@ const availability = await db.select().from(Availability);
 ---
 
 <Layout title="Elegir fecha y hora">
-  <Cally
-    client:only="react"
-    professionalData={professionalData[0]}
-    availability={availability}
-    appointments={appointments}
-  />
+  {
+    professionalData ? (
+      <Cally
+        client:only="react"
+        professionalData={professionalData[0]}
+        availability={availability}
+        appointments={appointments}
+      />
+    ) : (
+      <p>Hubo un error al leer los datos.</p>
+    )
+  }
 </Layout>

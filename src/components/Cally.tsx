@@ -34,7 +34,7 @@ interface ProfessionalProfile {
 
 interface Appointments {
   id: string;
-  date: string;
+  date: Date;
   isActive: boolean;
   professionalId: string;
   patientId: string;
@@ -152,7 +152,9 @@ function Cally({
     return {};
   });
 
-  const [isSelectedDate, setIsSelectedDate] = useState(false);
+  const [isSelectedDate, setIsSelectedDate] = useState<Boolean>(
+    () => !!value.calendarTime
+  );
 
   const onChange = (event: Event | ChangeEvent<HTMLInputElement>) => {
     const e = event.target as HTMLInputElement;

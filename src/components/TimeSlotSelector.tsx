@@ -18,7 +18,7 @@ interface Availability {
 }
 interface Appointments {
   id: string;
-  date: string;
+  date: Date;
   isActive: boolean;
   professionalId: string;
   patientId: string;
