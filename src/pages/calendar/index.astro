@@ -4,25 +4,38 @@ import Cally from "../../components/Cally.tsx";
 
 import { db, ProfessionalProfile, Availability, Appointments } from "astro:db";
 
-// Get data from astro db
-const professionalData = await db
-  .select({
-    id: ProfessionalProfile.id,
-    sessionTime: ProfessionalProfile.sessionTime,
-  })
-  .from(ProfessionalProfile);
+let professionalData, availability, appointments;
 
-const appointments = await db.select().from(Appointments);
+try {
+  const [professionalResponse, availabilityResponse, appointmentsResponse] =
+    await Promise.all([
+      db
+        .select({
+          id: ProfessionalProfile.id,
+          sessionTime: ProfessionalProfile.sessionTime,
+        })
+        .from(ProfessionalProfile),
+      db.select().from(Availability),
+      db.select().from(Appointments),
+    ]);
 
-const availability = await db.select().from(Availability);
+  professionalData = professionalResponse[0];
+  availability = availabilityResponse;
+  appointments = appointmentsResponse;
+} catch (error) {
+  console.error("Error fetching data:", error);
+  professionalData = null;
+  availability = null;
+  appointments = null;
+}
 ---
 
 <Layout title="Elegir fecha y hora">
   {
-    professionalData ? (
+    professionalData && availability && appointments ? (
       <Cally
         client:only="react"
-        professionalData={professionalData[0]}
+        professionalData={professionalData}
         availability={availability}
         appointments={appointments}
       />
