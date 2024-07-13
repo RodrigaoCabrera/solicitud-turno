@@ -8,10 +8,12 @@ import {
   monthEnd,
 } from "@formkit/tempo";
 import TimeSlotSelector from "./TimeSlotSelector.tsx";
+import AppointmentModality from "./AppointmentModality.tsx";
 
 interface Appointmentdate {
-  calendarDate?: string;
-  calendarTime?: string;
+  calendarDate: string;
+  calendarTime: string;
+  modality: string;
 }
 interface Availability {
   id: number;
@@ -141,19 +143,25 @@ function Cally({
 }) {
   const [value, setValue] = useState<Appointmentdate>(() => {
     const storedDate = localStorage.getItem("storedDate");
+    const modality = localStorage.getItem("modality");
 
-    if (storedDate) {
+    if (storedDate && modality) {
       return {
         calendarDate: format(storedDate, "YYYY-MM-DD"),
         calendarTime: format(storedDate, "HH:mm"),
+        modality: JSON.parse(modality),
       };
     }
 
-    return {};
+    return {
+      calendarDate: "",
+      calendarTime: "",
+      modality: "",
+    };
   });
 
   const [isSelectedDate, setIsSelectedDate] = useState<Boolean>(
-    () => !!value.calendarTime
+    () => !!value.calendarTime && !!value.modality
   );
 
   const onChange = (event: Event | ChangeEvent<HTMLInputElement>) => {
@@ -168,7 +176,9 @@ function Cally({
     setValue(newCalendarDate);
 
     // To active 'Confirmate' button when the user selects a date
-    setIsSelectedDate(!!newCalendarDate.calendarTime);
+    setIsSelectedDate(
+      !!newCalendarDate.calendarTime && !!newCalendarDate.modality
+    );
   };
 
   const goToAppointmentForm = () => {
@@ -176,11 +186,13 @@ function Cally({
 
     const newDate = format(t, "YYYY-MM-DDTHH:mm:ssZ");
     localStorage.setItem("storedDate", newDate);
+    localStorage.setItem("modality", JSON.stringify(value.modality));
     localStorage.setItem("professionalId", professionalData.id);
   };
 
   return (
     <>
+      <AppointmentModality onChange={onChange} modality={value.modality} />
       <Picker
         value={value}
         onChange={onChange}
