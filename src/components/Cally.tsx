@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from "react";
+import { MouseEvent, useState, type ChangeEvent } from "react";
 import { CalendarDate, CalendarMonth } from "./Calendar";
 import {
   format,
@@ -9,6 +9,7 @@ import {
 } from "@formkit/tempo";
 import TimeSlotSelector from "./TimeSlotSelector.tsx";
 import AppointmentModality from "./AppointmentModality.tsx";
+import { Modal, ModalTrigger } from "./UI/modal/Modal.tsx";
 
 interface Appointmentdate {
   calendarDate: string;
@@ -190,6 +191,12 @@ function Cally({
     localStorage.setItem("professionalId", professionalData.id);
   };
 
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const handleModal = (action: "open" | "close") => {
+    console.log(action);
+    setIsOpenModal(action === "open");
+  };
+
   return (
     <>
       <AppointmentModality onChange={onChange} modality={value.modality} />
@@ -211,13 +218,11 @@ function Cally({
           onChange={onChange}
         />
       )}
-      <button
-        onClick={goToAppointmentForm}
-        type="button"
-        disabled={!isSelectedDate}
-      >
-        <a href="/appointments">Confirmar</a>
-      </button>
+
+      <Modal isOpenModal={isOpenModal} handleModal={handleModal} />
+      <ModalTrigger action="open" handleModal={handleModal}>
+        <span>Confirmar</span>
+      </ModalTrigger>
     </>
   );
 }
