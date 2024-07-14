@@ -66,6 +66,12 @@ const DateType = pipe(
   toMinValue(new Date())
 );
 
+// Appointment modality
+const AppointmentModality = picklist(
+  ["face-to-face", "online"],
+  "modality mst be one of the following options: 'face-to-face, or online'"
+);
+
 // Request schema
 const appoinmentDataSchema = object({
   patient: object({
@@ -90,6 +96,7 @@ const appoinmentDataSchema = object({
   appointment: object({
     date: DateType,
     professionalId: HashId,
+    modality: AppointmentModality,
   }),
 });
 

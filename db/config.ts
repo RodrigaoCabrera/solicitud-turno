@@ -31,7 +31,7 @@ const Appointments = defineTable({
     id: column.text({ primaryKey: true }),
     date: column.date(),
     isActive: column.boolean(),
-
+    modality: column.text(),
     patientId: column.text({ references: () => Patients.columns.id }),
 
     professionalId: column.text({
