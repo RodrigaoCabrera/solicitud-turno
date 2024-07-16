@@ -1,0 +1,43 @@
+---
+import Location from "./icons/Location.astro";
+import Email from "./icons/Email.astro";
+import Phone from "./icons/Phone.astro";
+import Item from "./UI/Item.astro";
+
+interface Props {
+  address: string;
+  email: string;
+  phone: string;
+}
+const { address, email, phone } = Astro.props;
+---
+
+<section class="flex flex-col gap-y-1">
+  <Item label={address}>
+    <Location
+      width="15"
+      height="15"
+      fill="none"
+      viewBox="0 0 15 15"
+      slot="before-text"
+    />
+  </Item>
+  <Item label={email}>
+    <Email
+      width="15"
+      height="15"
+      fill="none"
+      viewBox="0 0 15 15"
+      slot="before-text"
+    />
+  </Item>
+  <Item label={phone}>
+    <Phone
+      width="15"
+      height="15"
+      fill="none"
+      viewBox="0 0 15 15"
+      slot="before-text"
+    />
+  </Item>
+</section>

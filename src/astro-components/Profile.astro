@@ -1,0 +1,18 @@
+---
+import AboutMe from "./UI/AboutMe.astro";
+import Avatar from "./UI/Avatar.astro";
+
+interface Props {
+  title: string;
+  text: string;
+}
+
+const { title, text }: Props = Astro.props;
+---
+
+<section>
+  <div class="flex justify-center my-4">
+    <Avatar />
+  </div>
+  <AboutMe title={title} text={text} />
+</section>

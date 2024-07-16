@@ -1,0 +1,19 @@
+---
+import Typography from "./Typography.astro";
+
+interface Props {
+  title: string;
+  text: string;
+}
+
+const { title, text } = Astro.props;
+---
+
+<div>
+  <Typography as="h1" variant="sm" color="darkText" class="mb-1">
+    {title}
+  </Typography>
+  <Typography as="p" variant="xs" color="lightText">
+    {text}
+  </Typography>
+</div>

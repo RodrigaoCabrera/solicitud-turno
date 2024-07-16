@@ -1,0 +1,17 @@
+---
+import Typography from "./Typography.astro";
+
+interface Props {
+  label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<div class="flex gap-x-2">
+  <slot name="before-text" />
+  <Typography as="span" variant="xs" color="lightText">
+    {label}
+  </Typography>
+  <slot name="after-text" />
+</div>
