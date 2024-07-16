@@ -1,4 +1,5 @@
 ---
+import Typography from "@/astro-components/Typography.astro";
 import Layout from "../layouts/Layout.astro";
 import {
   db,
@@ -22,7 +23,9 @@ console.log({ availability });
 
 <Layout title="Turnos app">
   <main>
-    <h1>Turnos</h1>
+    <Typography as="h3" class="font-semibold" color="black" variant="xs"
+      >Turnas</Typography
+    >
     <table>
       <thead>
         <tr>

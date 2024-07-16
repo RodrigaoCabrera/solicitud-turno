@@ -3,19 +3,22 @@ import type { HTMLTag, Polymorphic } from "astro/types";
 
 type Props<Tag extends HTMLTag> = Polymorphic<{
   as: Tag;
-  variant: keyof typeof variantClasses;
+  variant: keyof typeof fontClasses;
   color: keyof typeof colorClasses;
 }>;
 
 const { as: Tag, class: className, variant, color, ...props } = Astro.props;
 
-const variantClasses: { [key: string]: string } = {
-  h2: "text-xl font-medium lg:text-2xl",
-  h3: "text-2xl font-semibold",
-  large: "text-lg",
-  medium: "text-md",
-  small: "text-sm",
-  mini: "text-[10px]",
+const fontClasses: { [key: string]: string } = {
+  "5xl": "text-5xl",
+  "4xl": "text-4xl",
+  "3xl": "text-3xl",
+  "2xl": "text-2xl",
+  xl: "text-xl",
+  lg: "text-lg",
+  m: "text-m",
+  sm: "text-sm",
+  xs: "text-xs",
 };
 
 const colorClasses = {
@@ -26,7 +29,7 @@ const colorClasses = {
 };
 
 const classes = [
-  variantClasses[variant as keyof typeof variantClasses],
+  fontClasses[variant as keyof typeof fontClasses],
   colorClasses[color as keyof typeof colorClasses],
   className,
 ];
