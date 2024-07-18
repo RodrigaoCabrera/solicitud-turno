@@ -1,10 +1,18 @@
 ---
-import Profile from "@/sections/Profile.astro";
+/* Layout components */
 import Layout from "../layouts/Layout.astro";
-import { db, ProfessionalProfile } from "astro:db";
+
+/* Section components */
+import Profile from "@/sections/Profile.astro";
 import Contact from "@/sections/Contact.astro";
+import OpenHours from "@/sections/OpenHours.astro";
+
+/* UI components */
 import Button from "@/astro-components/UI/Button.astro";
 import Typography from "@/astro-components/UI/Typography.astro";
+
+/* DB */
+import { db, ProfessionalProfile } from "astro:db";
 
 const professionalData = await db.select().from(ProfessionalProfile);
 const { aboutMe, address, email, phone } = professionalData[0];
@@ -13,6 +21,7 @@ const { aboutMe, address, email, phone } = professionalData[0];
 <Layout title="Turnos app">
   <main class="flex flex-col gap-y-5">
     <Profile title="Sobre mí" text={aboutMe} />
+    <OpenHours />
     <Contact address={address} email={email} phone={phone} />
 
     <Button as="a" href="/calendar" class="flex justify-center uppercase">

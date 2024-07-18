@@ -1,0 +1,111 @@
+---
+import Item from "@/astro-components/UI/Item.astro";
+import Typography from "@/astro-components/UI/Typography.astro";
+import { Availability } from "astro:db";
+import { db } from "astro:db";
+
+interface OpenHours {
+  days: number[];
+  openHoursAM: string;
+  openHoursPM: string;
+}
+/* availability data from DB */
+const availability = await db.select().from(Availability);
+
+// Formated data for to group repeated available hours
+let openHours: OpenHours[] = [];
+
+for (let el of availability) {
+  const openHoursAM = `${el.startTimeAM}-${el.endTimeAM}`;
+  const openHoursPM = `${el.startTimePM}-${el.endTimePM}`;
+
+  const existOpenHours = openHours.find(
+    (openHour: any) =>
+      openHour.openHoursAM === openHoursAM &&
+      openHour.openHoursPM === openHoursPM
+  );
+
+  if (!existOpenHours) {
+    openHours.push({
+      days: [el.dayOfWeek],
+      openHoursAM,
+      openHoursPM,
+    });
+    continue;
+  }
+
+  existOpenHours.days = [...existOpenHours.days, el.dayOfWeek];
+}
+
+// Get day
+const daysOfWeek = {
+  0: "Lunes",
+  1: "Martes",
+  2: "Miércoles",
+  3: "Jueves",
+  4: "Viernes",
+  5: "Sábado",
+  6: "Domingo",
+};
+
+// Determinate if days are secuencial
+const areSecuencialDays = (daysArr: number[]) => {
+  // When the days array is smaller or equal than 1, return that days are not secuencial
+  if (daysArr.length <= 1) {
+    return false;
+  }
+
+  // We determinate if the days array is secuencial through of a counter
+  let count = null;
+  for (let day of daysArr) {
+    if (count == null) {
+      count = day;
+      continue;
+    }
+
+    if (count + 1 !== day) {
+      return false;
+    }
+    count++;
+  }
+
+  return true;
+};
+const getDaysRange = (days: number[]) => {
+  let availebaleDaysLabel: string | string[] = [];
+
+  // if days are secuencial it return only the first and last day
+  if (areSecuencialDays(days)) {
+    const firstElement = days[0] as keyof typeof daysOfWeek;
+    const lastElement = days.at(-1) as keyof typeof daysOfWeek;
+    availebaleDaysLabel = `${daysOfWeek[firstElement]} a ${daysOfWeek[lastElement]}`;
+    return availebaleDaysLabel;
+  }
+
+  // If days are not secuencial, it return each day
+  for (let day of days) {
+    const key = day as keyof typeof daysOfWeek;
+    availebaleDaysLabel.push(daysOfWeek[key]);
+  }
+  return availebaleDaysLabel.join(", ");
+};
+---
+
+<article>
+  <Typography as="h2" variant="sm" color="darkText">
+    Horarios de atención
+  </Typography>
+  {
+    (
+      <section>
+        {openHours.map((availableDays) => (
+          <Typography as="p" variant="xs" color="lightText">
+            <span>{getDaysRange(availableDays.days)}</span> |
+            <span>{availableDays.openHoursAM} AM</span>
+            <span>{availableDays.openHoursPM} PM</span>
+          </Typography>
+        ))}
+      </section>
+    )
+  }
+</article>
