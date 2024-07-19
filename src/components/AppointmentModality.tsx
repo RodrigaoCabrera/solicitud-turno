@@ -6,9 +6,9 @@ interface Props {
 }
 const AppointmentModality: React.FC<Props> = ({ onChange, modality }) => {
   return (
-    <>
+    <section>
       <p className="text-sm text-[#222B45] mb-1">Modalidad</p>
-      <section className="flex w-100 gap-3">
+      <div className="flex w-100 gap-3">
         <div className="flex-1">
           <label
             htmlFor="face-to-face"
@@ -48,8 +48,8 @@ const AppointmentModality: React.FC<Props> = ({ onChange, modality }) => {
             defaultChecked={modality === "online"}
           />
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 };
 

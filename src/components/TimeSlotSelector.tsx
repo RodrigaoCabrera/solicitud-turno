@@ -118,9 +118,9 @@ const TimeSlotSelector: React.FC<Props> = ({
   };
 
   return (
-    <>
+    <section>
       <p className="text-sm text-[#222B45] mb-1">Horarios disponibles</p>
-      <section className="time-slot-container">
+      <div className="time-slot-container">
         <div className="flex justify-center align-middle w-100 max-w-[196px] mx-auto border-[1px] border-solid boder-[##94A3B8] rounded-full">
           <div className="flex-1">
             <label
@@ -189,8 +189,8 @@ const TimeSlotSelector: React.FC<Props> = ({
             </div>
           </>
         ))}
-      </section>
-    </>
+      </div>
+    </section>
   );
 };
 
