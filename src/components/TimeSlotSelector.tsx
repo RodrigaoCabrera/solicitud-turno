@@ -171,10 +171,11 @@ const TimeSlotSelector: React.FC<Props> = ({
           </div>
         </div>
 
-        {slots.map((slot) => (
-          <>
-            <div className="radio-input" key={slot.time}>
+        <section className="flex justify-center gap-3 flex-wrap w-100 mx-auto mt-3">
+          {slots.map((slot) => (
+            <div className="radio-input flex-1 max-w-[78px]" key={slot.time}>
               <input
+                className="hidden"
                 type="radio"
                 id={slot.time}
                 name="calendarTime"
@@ -183,12 +184,18 @@ const TimeSlotSelector: React.FC<Props> = ({
                 defaultChecked={slot.time === value.calendarTime}
                 disabled={slot.appointmentExist}
               />
-              <label htmlFor={slot.time}>
-                <span>{slot.time}</span>
+              <label
+                htmlFor={slot.time}
+                className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 border-[1px] border-solid boder-[#94A3B8] pt-2 px-2 pb-1 ${
+                  slot.time === value.calendarTime &&
+                  "bg-[#D9D9D9] font-semibold"
+                }`}
+              >
+                <span>{slot.time}h</span>
               </label>
             </div>
-          </>
-        ))}
+          ))}
+        </section>
       </div>
     </section>
   );
