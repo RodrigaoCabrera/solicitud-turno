@@ -12,7 +12,7 @@ const AppointmentModality: React.FC<Props> = ({ onChange, modality }) => {
         <div className="flex-1">
           <label
             htmlFor="face-to-face"
-            className={`flex flex-col align-bottom justify-center rounded-full border-[1px] border-solid boder-[#94A3B8]  pt-1 text-center ${
+            className={`flex flex-col align-bottom justify-center rounded-full border-[1px] border-solid boder-[#94A3B8]  pt-1 text-center text-sm ${
               modality === "face-to-face" && "bg-gray-100"
             }`}
           >
@@ -32,7 +32,7 @@ const AppointmentModality: React.FC<Props> = ({ onChange, modality }) => {
         <div className="flex-1">
           <label
             htmlFor="online"
-            className={`flex flex-col align-bottom justify-center rounded-full border-[1px] border-solid boder-[#94A3B8] pt-1 text-center  ${
+            className={`flex flex-col align-bottom justify-center rounded-full border-[1px] border-solid boder-[#94A3B8] pt-1 text-center text-sm ${
               modality === "online" && "bg-gray-100"
             }`}
           >

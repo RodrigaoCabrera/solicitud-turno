@@ -5,6 +5,9 @@ import React, {
   useState,
 } from "react";
 import { date, format, isEqual } from "@formkit/tempo";
+import AM from "./icons/AM";
+import AMTimeSelectorIcon from "./icons/AMTimeSelectorIcon";
+import PMTimeSelectorIcon from "./icons/PMTimeSelector";
 
 interface Availability {
   id: number;
@@ -45,7 +48,7 @@ const TimeSlotSelector: React.FC<Props> = ({
   value,
   onChange,
 }) => {
-  const [timeType, setTimeType] = useState<"AM" | "PM">(() => {
+  const [timeZone, setTimeZone] = useState<"AM" | "PM">(() => {
     if (value.calendarTime) {
       const formattedTime = format(
         new Date(`${value.calendarDate} ${value.calendarTime}`),
@@ -104,56 +107,90 @@ const TimeSlotSelector: React.FC<Props> = ({
   useEffect(() => {
     const currentDateAvailability = getCurrentDateAvailability();
     if (currentDateAvailability) {
-      setSlots(generateTimeSlots(currentDateAvailability, timeType));
+      setSlots(generateTimeSlots(currentDateAvailability, timeZone));
     } else {
       setSlots([]);
     }
-  }, [value.calendarDate, timeType]);
+  }, [value.calendarDate, timeZone]);
 
-  const handleTimeTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTimeType(e.target.id as "AM" | "PM");
+  const handletimeZoneChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setTimeZone(e.target.id as "AM" | "PM");
   };
 
   return (
-    <section className="time-slot-container">
-      <div>
-        <label htmlFor="AM">AM</label>
-        <input
-          type="radio"
-          name="tab"
-          id="AM"
-          onChange={handleTimeTypeChange}
-          checked={timeType === "AM"}
-        />
-        <label htmlFor="PM">PM</label>
-        <input
-          type="radio"
-          name="tab"
-          id="PM"
-          onChange={handleTimeTypeChange}
-          checked={timeType === "PM"}
-        />
-      </div>
-
-      {slots.map((slot) => (
-        <>
-          <div className="radio-input" key={slot.time}>
-            <input
-              type="radio"
-              id={slot.time}
-              name="calendarTime"
-              value={slot.time}
-              onChange={onChange}
-              defaultChecked={slot.time === value.calendarTime}
-              disabled={slot.appointmentExist}
-            />
-            <label htmlFor={slot.time}>
-              <span>{slot.time}</span>
+    <>
+      <p className="text-sm text-[#222B45] mb-1">Horarios disponibles</p>
+      <section className="time-slot-container">
+        <div className="flex justify-center align-middle w-100 max-w-[196px] mx-auto border-[1px] border-solid boder-[##94A3B8] rounded-full">
+          <div className="flex-1">
+            <label
+              htmlFor="AM"
+              className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 ${
+                timeZone === "AM" && "bg-[#94A3B8]"
+              }`}
+            >
+              <AMTimeSelectorIcon timeZone={timeZone} />
+              <span
+                className={`block pt-1 ${timeZone === "AM" && "text-white"}`}
+              >
+                Mañana
+              </span>
             </label>
+            <input
+              className="hidden"
+              type="radio"
+              name="tab"
+              id="AM"
+              onChange={handletimeZoneChange}
+              checked={timeZone === "AM"}
+            />
           </div>
-        </>
-      ))}
-    </section>
+          <div className="flex-1">
+            <label
+              htmlFor="PM"
+              className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 ${
+                timeZone === "PM" && "bg-[#94A3B8]"
+              }`}
+            >
+              <PMTimeSelectorIcon timeZone={timeZone} />
+
+              <span
+                className={`block pt-1 ${timeZone === "PM" && "text-white"}`}
+              >
+                Tarde
+              </span>
+            </label>
+            <input
+              className="hidden"
+              type="radio"
+              name="tab"
+              id="PM"
+              onChange={handletimeZoneChange}
+              checked={timeZone === "PM"}
+            />
+          </div>
+        </div>
+
+        {slots.map((slot) => (
+          <>
+            <div className="radio-input" key={slot.time}>
+              <input
+                type="radio"
+                id={slot.time}
+                name="calendarTime"
+                value={slot.time}
+                onChange={onChange}
+                defaultChecked={slot.time === value.calendarTime}
+                disabled={slot.appointmentExist}
+              />
+              <label htmlFor={slot.time}>
+                <span>{slot.time}</span>
+              </label>
+            </div>
+          </>
+        ))}
+      </section>
+    </>
   );
 };
 
