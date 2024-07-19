@@ -19,7 +19,7 @@ const { title } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
-  <body class="max-w-sm mx-auto">
+  <body class="max-w-sm px-3">
     <Header />
     <slot />
     <Footer />
@@ -30,5 +30,10 @@ const { title } = Astro.props;
   }
   html {
     font-family: "League Spartan Variable", system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  &:has(#menuDrawerContainer.translate-x-0) {
+    overflow: hidden;
   }
 </style>

@@ -1,0 +1,104 @@
+---
+import Close from "../icons/Close.astro";
+import Hamburger from "../icons/Hamburger.astro";
+import Button from "./Button.astro";
+import Typography from "./Typography.astro";
+---
+
+<section class="menuContainer flex align-middle">
+  <div class="flex">
+    <button id="menuTrigger">
+      <Hamburger
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        class="pointer-events-none"
+      />
+    </button>
+  </div>
+  <div id="menuBackdrop" class="fixed inset-0 bg-black opacity-50 z-40 hidden">
+  </div>
+  <aside
+    class="max-w-60 fixed inset-0 bg-white -translate-x-full transition z-50 p-2"
+    id="menuDrawerContainer"
+  >
+    <div class="flex justify-end">
+      <button id="closeMenu">
+        <span class="pointer-events-none">
+          <Close
+            width="19"
+            height="19"
+            viewBox="0 0 19 19"
+            fill="none"
+            class="pointer-events-none"
+          />
+        </span>
+      </button>
+    </div>
+
+    <div class="py-3">
+      <Button as="a" href="/calendar" class="flex justify-center uppercase">
+        <Typography as="span" variant="sm" color="black" class="font-semibold">
+          Agendar turno
+        </Typography>
+      </Button>
+    </div>
+
+    <ul>
+      <li class="mb-2 hover:bg-gray-100">
+        <a href="/#aboutMe" class="py-1 inline-block w-full text-sm">Sobre mí</a
+        >
+      </li>
+      <li class="mb-2 hover:bg-gray-100">
+        <a href="/#howToArrive" class="py-1 inline-block w-full text-sm"
+          >Cómo llegar a mi consultorio</a
+        >
+      </li>
+      <li class="mb-2 hover:bg-gray-100">
+        <a href="/#contact" class="py-1 inline-block w-full text-sm">Contacto</a
+        >
+      </li>
+      <li class="hover:bg-gray-100">
+        <a href="/cancelar-turno" class="py-1 inline-block w-full text-sm"
+          >Cancelar turno</a
+        >
+      </li>
+    </ul>
+  </aside>
+</section>
+
+<script>
+  const $menuTrigger = document.querySelector("#menuTrigger");
+  const $menuDrawerContainer = document.querySelector("#menuDrawerContainer");
+  const $closeMenu = document.querySelector("#closeMenu");
+  const $links = $menuDrawerContainer?.querySelectorAll("a");
+
+  // Handle open/close of the menu
+  const handleMenu = () => {
+    $menuDrawerContainer?.classList.toggle("translate-x-0");
+  };
+
+  $links?.forEach((link) => link.addEventListener("click", handleMenu));
+  $menuTrigger?.addEventListener("click", handleMenu);
+  $closeMenu?.addEventListener("click", handleMenu);
+
+  // Close menu with a click outside itself
+  document.addEventListener("click", (event) => {
+    if (
+      $menuDrawerContainer?.classList.contains("translate-x-0") &&
+      !$menuDrawerContainer.contains(event.target as Node) &&
+      event.target !== $menuTrigger
+    ) {
+      handleMenu();
+    }
+  });
+
+  // Prevent clicks inside the menu from closing it
+</script>
+
+<style>
+  .menuContainer:has(#menuDrawerContainer.translate-x-0) #menuBackdrop {
+    display: block;
+  }
+</style>
