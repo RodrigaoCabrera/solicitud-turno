@@ -50,7 +50,11 @@ function useProperty(ref: RefObject<HTMLElement>, prop: string, value?: any) {
 
 export const CalendarMonth = forwardRef<HTMLElement, CalendarMonthProps>(
   function CalendarMonth(props, forwardedRef) {
-    return <calendar-month offset={props.offset} ref={forwardedRef} />;
+    return (
+      <>
+        <calendar-month offset={props.offset} ref={forwardedRef} />
+      </>
+    );
   }
 );
 

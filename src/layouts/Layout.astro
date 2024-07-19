@@ -21,7 +21,9 @@ const { title } = Astro.props;
   </head>
   <body class="max-w-sm mx-auto">
     <Header />
-    <slot />
+    <main class="flex flex-col gap-y-4 px-3">
+      <slot />
+    </main>
     <Footer />
   </body>
 </html>

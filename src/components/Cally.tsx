@@ -11,6 +11,9 @@ import TimeSlotSelector from "./TimeSlotSelector.tsx";
 import AppointmentModality from "./AppointmentModality.tsx";
 import { Modal, ModalTrigger } from "./UI/modal/Modal.tsx";
 
+/* Styles */
+import "../styles/cally.css";
+
 interface Appointmentdate {
   calendarDate: string;
   calendarTime: string;
@@ -117,6 +120,38 @@ function Picker({
 
     return isfilledSchedule(date);
   };
+
+  const PreviousIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      width="24"
+      height="24"
+    >
+      <path
+        d="M15.75 19.5 8.25 12l7.5-7.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+
+  const NextIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      width="24"
+      height="24"
+    >
+      <path
+        d="m8.25 4.5 7.5 7.5-7.5 7.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+    </svg>
+  );
   return (
     <div>
       <CalendarDate
@@ -127,6 +162,68 @@ function Picker({
         isDateDisallowed={isDateDisallowed}
         onChange={onChange}
       >
+        <span slot="previous">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <path
+              d="M15 6L9 12L15 18"
+              stroke="#3E3D3D"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M15 6L9 12L15 18"
+              stroke="#535353"
+              stroke-opacity="0.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M15 6L9 12L15 18"
+              stroke="#535353"
+              stroke-opacity="0.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+
+        <span slot="next">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <path
+              d="M9 18L15 12L9 6"
+              stroke="#3E3D3D"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M9 18L15 12L9 6"
+              stroke="#535353"
+              stroke-opacity="0.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M9 18L15 12L9 6"
+              stroke="#535353"
+              stroke-opacity="0.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+
         <CalendarMonth />
       </CalendarDate>
     </div>

@@ -1,0 +1,47 @@
+calendar-date {
+  width: 100%;
+  border-radius: 15px;
+  background: #f9fbfd;
+  padding: 7px 0;
+
+  &::part(header) {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    align-items: center;
+  }
+  &::part(button) {
+    border: none;
+    background-color: #fff;
+  }
+
+  &::part(button):focus-visible {
+    outline: 2px solid #080316;
+  }
+
+  &::part(heading) {
+    font-size: 12px;
+    font-weight: 400;
+  }
+}
+calendar-month {
+  margin-inline: auto;
+  width: 100%;
+
+  &::part(heading) {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  &::part(day) {
+    color: #000;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  &::part(selected) {
+    font-weight: 700;
+    background-color: #d9d9d9;
+    border-radius: 50px;
+  }
+}
