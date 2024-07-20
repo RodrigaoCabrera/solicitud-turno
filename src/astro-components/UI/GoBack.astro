@@ -1,0 +1,21 @@
+---
+import GoBackIcon from "@/astro-components/icons/GoBackIcon.astro";
+import Typography from "./Typography.astro";
+
+interface Props {
+  label: string;
+  to: string;
+}
+
+const { label, to } = Astro.props;
+---
+
+<section class="flex justify-between items-center">
+  <span>
+    <a href={to}>
+      <GoBackIcon width="20" height="20" viewBox="0 0 20 20" fill="none" />
+    </a>
+  </span>
+  <Typography as="h1" variant="m" color="black"> {label}</Typography>
+  <span class="ghost-element"></span>
+</section>

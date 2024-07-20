@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import Cally from "../../components/Cally.tsx";
 
 import { db, ProfessionalProfile, Availability, Appointments } from "astro:db";
+import GoBack from "@/astro-components/UI/GoBack.astro";
 
 let professionalData, availability, appointments;
 
@@ -32,6 +33,7 @@ try {
 ---
 
 <Layout title="Elegir fecha y hora">
+  <GoBack label="Nuevo turno" to="/" />
   {
     professionalData && availability && appointments ? (
       <Cally
