@@ -1,15 +1,11 @@
-.modal {
-  position: fixed;
-  inset: 0px;
-}
-dialog::backdrop {
-  background-color: #000000b3;
+.appointment-dialog[open]::backdrop {
+  background-color: #000000;
   position: fixed;
   inset: 0px;
   background: rgba(0, 0, 0, 0.1);
 
   animation-name: join-anim;
-  animation-duration: 200ms;
+  animation-duration: 100ms;
   animation-fill-mode: forwards;
   animation-timing-function: ease-in-out;
 }
@@ -19,6 +15,6 @@ dialog::backdrop {
     background-color: rgba(0, 0, 0, 0);
   }
   to {
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.5);
   }
 }

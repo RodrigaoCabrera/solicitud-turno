@@ -1,4 +1,4 @@
-import { MouseEvent, useState, type ChangeEvent } from "react";
+import { MouseEvent, useRef, useState, type ChangeEvent } from "react";
 import { CalendarDate, CalendarMonth } from "./Calendar";
 import {
   format,
@@ -48,6 +48,7 @@ interface Appointments {
 interface ProfessionalData {
   id: string;
   sessionTime: number;
+  address: string;
 }
 
 function Picker({
@@ -248,19 +249,15 @@ function Cally({
     );
   };
 
-  const goToAppointmentForm = () => {
-    const t = new Date(`${value.calendarDate} ${value.calendarTime}`);
-
-    const newDate = format(t, "YYYY-MM-DDTHH:mm:ssZ");
-    localStorage.setItem("storedDate", newDate);
-    localStorage.setItem("modality", JSON.stringify(value.modality));
-    localStorage.setItem("professionalId", professionalData.id);
-  };
-
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const handleModal = (action: "open" | "close") => {
-    console.log(action);
-    setIsOpenModal(action === "open");
+    const $dialog = dialogRef.current;
+    const isOpenDialog = $dialog?.open;
+    if (isOpenDialog) {
+      $dialog.close();
+    } else {
+      $dialog?.showModal();
+    }
   };
 
   return (
@@ -285,7 +282,13 @@ function Cally({
         />
       )}
 
-      <Modal isOpenModal={isOpenModal} handleModal={handleModal} />
+      <Modal
+        dialogRef={dialogRef}
+        handleModal={handleModal}
+        value={value}
+        professionalId={professionalData.id}
+        professionalAddress={professionalData.address}
+      />
       <ModalTrigger action="open" handleModal={handleModal}>
         <span>Confirmar</span>
       </ModalTrigger>

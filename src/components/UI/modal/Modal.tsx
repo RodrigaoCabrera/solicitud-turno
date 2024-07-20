@@ -1,34 +1,100 @@
 import React, { ReactNode } from "react";
 import "./styles.css";
+import { format } from "@formkit/tempo";
+import Card from "../appointment/Card";
+import CloseIcon from "@/components/icons/CloseIcon";
 type HandleModal = {
   handleModal: (action: "open" | "close") => void;
 };
-interface ModalProps extends HandleModal {
-  isOpenModal: boolean;
+interface Appointmentdate {
+  calendarDate: string;
+  calendarTime: string;
+  modality: string;
 }
+interface ModalProps extends HandleModal {
+  dialogRef: React.RefObject<HTMLDialogElement>;
+  value: Appointmentdate;
+  professionalId: string;
+  professionalAddress: string;
+}
+
 interface TriggerProps extends HandleModal {
   action: "open" | "close";
   children: ReactNode;
 }
-export function Modal({ isOpenModal, handleModal }: ModalProps) {
+export function Modal({
+  dialogRef,
+  handleModal,
+  value,
+  professionalId,
+  professionalAddress,
+}: ModalProps) {
+  const addToLocalStorage = () => {
+    const t = new Date(`${value.calendarDate} ${value.calendarTime}`);
+
+    const newDate = format(t, "YYYY-MM-DDTHH:mm:ssZ");
+    localStorage.setItem("storedDate", newDate);
+    localStorage.setItem("modality", JSON.stringify(value.modality));
+    localStorage.setItem("professionalId", professionalId);
+    localStorage.setItem("professionalAddress", professionalAddress);
+  };
+
   return (
     <dialog
-      className="modal"
+      className="appointment-dialog bg-[#F9FBFD] w-11/12 rounded-2xl max-w-[375px] pt-10 pb-4"
       id="modal"
-      open={isOpenModal}
+      ref={dialogRef}
       onClick={() => handleModal("close")}
     >
-      <section onClick={(e) => e.stopPropagation()}>
-        <h1>¡Ya casi tenés tu turno reservado!</h1>
-        <a href="/appointments">Confirmar</a>
-        <ModalTrigger handleModal={handleModal} action="close">
-          <span>Editar</span>
-        </ModalTrigger>
-      </section>
+      <div className="absolute right-3 top-3">
+        <CloseIcon width="16" height="16" viewBox="0 0 16 16" fill="none" />
+      </div>
+
+      <article
+        className="max-w-[297px] mx-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <section className="mb-3">
+          <h3 className="text-m px-2">¡Ya casi tenés tu turno reservado!</h3>
+        </section>
+
+        <main className="px-3">
+          <Card value={value} professionalAddress={professionalAddress} />
+        </main>
+
+        <section className="flex flex-col items-center gap-1 mt-3">
+          <div className="w-full">
+            <a
+              href="/appointments"
+              onClick={addToLocalStorage}
+              className="w-full text-center inline-block px-3 py-1.5 duration-150 rounded-full border-[1px] border-solid boder-[#94A3B8]"
+            >
+              Confirmar
+            </a>
+          </div>
+
+          <div>
+            <ModalTrigger handleModal={handleModal} action="close">
+              <span>Editar</span>
+            </ModalTrigger>
+          </div>
+        </section>
+      </article>
     </dialog>
   );
 }
 
 export function ModalTrigger({ handleModal, action, children }: TriggerProps) {
-  return <button onClick={() => handleModal(action)}>{children}</button>;
+  return (
+    <button
+      onClick={() => handleModal(action)}
+      className={`px-3 py-1.5 duration-150 rounded-full  ${
+        action === "open"
+          ? "text-sm font-semibold uppercase bg-[#D9D9D9] hover:bg-[#cecdcd]"
+          : "text-xs text-[#222B45]  underline"
+      }`}
+    >
+      {children}
+    </button>
+  );
 }

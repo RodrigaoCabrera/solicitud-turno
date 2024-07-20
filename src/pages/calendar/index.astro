@@ -13,6 +13,7 @@ try {
         .select({
           id: ProfessionalProfile.id,
           sessionTime: ProfessionalProfile.sessionTime,
+          address: ProfessionalProfile.address,
         })
         .from(ProfessionalProfile),
       db.select().from(Availability),
