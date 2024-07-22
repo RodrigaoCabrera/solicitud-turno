@@ -1,0 +1,15 @@
+---
+interface Props {
+  errors?: { [key: string]: string[] };
+  erroKey: string;
+  errorId: string;
+}
+
+const { errors, erroKey, errorId } = Astro.props;
+const errorMessage =
+  errors && errors[erroKey] && errors[erroKey][0].replace("Invalid type:", "");
+---
+
+<span id={errorId}>
+  {errorMessage}
+</span>
