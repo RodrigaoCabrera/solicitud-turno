@@ -6,6 +6,8 @@ import {
   isEqual,
   addMonth,
   monthEnd,
+  parse,
+  applyOffset,
 } from "@formkit/tempo";
 import TimeSlotSelector from "./TimeSlotSelector.tsx";
 import AppointmentModality from "./AppointmentModality.tsx";
@@ -115,7 +117,7 @@ function Picker({
       return true;
     }
 
-    if (!availableDays.includes(date.getDay())) {
+    if (!availableDays.includes(date.getUTCDay())) {
       return true;
     }
 
@@ -128,7 +130,6 @@ function Picker({
         value={value.calendarDate}
         min={format(today, "YYYY-MM-DD")} // Dí a actual
         max={format(monthEnd(addMonth(today, 1)), "YYYY-MM-DD")} // ültimo día del siguiente mes
-        locale="es-ES"
         isDateDisallowed={isDateDisallowed}
         onChange={onChange}
       >
@@ -211,13 +212,14 @@ function Cally({
 }) {
   const [value, setValue] = useState<Appointmentdate>(() => {
     const storedDate = localStorage.getItem("storedDate");
+    const storedTime = localStorage.getItem("storedTime");
     const modality = localStorage.getItem("modality");
 
-    if (storedDate && modality) {
+    if (storedDate && storedTime && modality) {
       return {
-        calendarDate: format(storedDate, "YYYY-MM-DD"),
-        calendarTime: format(storedDate, "HH:mm"),
-        modality: JSON.parse(modality),
+        calendarDate: storedDate,
+        calendarTime: storedTime,
+        modality,
       };
     }
 

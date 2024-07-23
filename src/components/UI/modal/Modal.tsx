@@ -1,6 +1,6 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import "./styles.css";
-import { format } from "@formkit/tempo";
+import { format, parse } from "@formkit/tempo";
 import Card from "../appointment/Card";
 import CloseIcon from "@/components/icons/CloseIcon";
 type HandleModal = {
@@ -30,11 +30,9 @@ export function Modal({
   professionalAddress,
 }: ModalProps) {
   const addToLocalStorage = () => {
-    const t = new Date(`${value.calendarDate} ${value.calendarTime}`);
-
-    const newDate = format(t, "YYYY-MM-DDTHH:mm:ssZ");
-    localStorage.setItem("storedDate", newDate);
-    localStorage.setItem("modality", JSON.stringify(value.modality));
+    localStorage.setItem("storedDate", value.calendarDate);
+    localStorage.setItem("storedTime", value.calendarTime);
+    localStorage.setItem("modality", value.modality);
     localStorage.setItem("professionalId", professionalId);
     localStorage.setItem("professionalAddress", professionalAddress);
   };

@@ -20,6 +20,7 @@ let formData = {
   tutorPhone: "",
   relationshipWithThePatient: "",
   date: "",
+  time: "",
   professionalId: "",
   modality: "",
 };
@@ -43,6 +44,7 @@ async function handlePostRequest() {
       relationshipWithThePatient:
         form.get("relationshipWithThePatient")?.toString() || "",
       date: form.get("date")?.toString() || "",
+      time: form.get("time")?.toString() || "",
       professionalId: form.get("professionalId")?.toString() || "",
       modality: form.get("modality")?.toString() || "",
     };
@@ -67,10 +69,11 @@ async function handlePostRequest() {
     };
 
     const appointmentDate = formData.date;
-    const parsedDate = applyOffset(parse(appointmentDate), "-0300");
+    const appointmentTime = formData.time;
 
     const appointment = {
-      date: parsedDate,
+      date: appointmentDate,
+      time: appointmentTime,
       professionalId: formData.professionalId,
       modality: formData.modality,
     };
@@ -103,13 +106,17 @@ async function handlePostRequest() {
 
     const data = await response.json();
     if (!response.ok) {
-      console.log(data);
       errors = { api: "Error al procesar la solicitud" };
+      return new Response(
+        "Error al procesar la solicitud. Vuelve a intentarlo!",
+        { status: 400 }
+      );
     }
     return Astro.redirect(`/appointments/${data.id}`);
   } catch (e) {
     if (e instanceof Error) {
       console.log(e.message);
+      return new Response("Error", { status: 400 });
     }
   }
 }
@@ -332,6 +339,7 @@ if (Astro.request.method === "POST") {
       value={formData.professionalId}
     />
     <input type="text" id="date" name="date" value={formData.date} />
+    <input type="text" id="time" name="time" value={formData.time} />
     <input
       type="text"
       id="modality"
@@ -362,10 +370,13 @@ if (Astro.request.method === "POST") {
 
   function addDateFromLocalStorage() {
     const date = localStorage.getItem("storedDate");
+    const time = localStorage.getItem("storedTime");
     const professionalId = localStorage.getItem("professionalId");
     const modality = localStorage.getItem("modality");
 
     const $dateInput = document.querySelector("#date") as HTMLInputElement;
+    const $timeInput = document.querySelector("#time") as HTMLInputElement;
+
     const $professionalIdInput = document.querySelector(
       "#professionalId"
     ) as HTMLInputElement;
@@ -374,10 +385,9 @@ if (Astro.request.method === "POST") {
       "#modality"
     ) as HTMLInputElement;
 
-    if (date && professionalId && modality) {
-      console.log(date);
-      console.log(modality);
+    if (date && time && professionalId && modality) {
       $dateInput.value = date;
+      $timeInput.value = time;
       $professionalIdInput.value = professionalId;
       $modalityInput.value = modality;
     }

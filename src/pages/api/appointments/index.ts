@@ -31,10 +31,10 @@ export const POST: APIRoute = async ({ request }) => {
   const appointmentRequest = await request.json();
 
   // Convert appointment date a Date object
-  appointmentRequest.appointment.date = new Date(
+  /*  appointmentRequest.appointment.date = new Date(
     appointmentRequest.appointment.date
   );
-
+ */
   // Validate appointment data
   const { success, output, issues } = safeParse(
     appoinmentDataSchema,

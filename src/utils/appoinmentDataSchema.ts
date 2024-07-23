@@ -12,6 +12,8 @@ import {
   hash,
   picklist,
   date as dateType,
+  isoDate,
+  isoTime,
 } from "valibot";
 
 // Email type
@@ -48,10 +50,8 @@ const HashId = pipe(
 );
 
 // Date type
-const DateType = pipe(
-  dateType("The date must be a valid ISO 8601 date string"),
-  toMinValue(new Date())
-);
+const IsoDate = pipe(string(), isoDate("The date is badly formatted."));
+const IsoTime = pipe(string(), isoTime("The time is badly formatted."));
 
 // Appointment modality
 const AppointmentModality = picklist(
@@ -81,7 +81,8 @@ export const appoinmentDataSchema = object({
   }),
 
   appointment: object({
-    date: DateType,
+    date: IsoDate,
+    time: IsoTime,
     professionalId: HashId,
     modality: AppointmentModality,
   }),
