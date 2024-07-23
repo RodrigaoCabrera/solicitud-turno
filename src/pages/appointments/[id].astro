@@ -1,14 +1,18 @@
 ---
-import { format } from "@formkit/tempo";
+import { applyOffset, format } from "@formkit/tempo";
 import { db, eq, Patients, Tutors, Appointments } from "astro:db";
 interface Props {
   id: string;
 }
 const { id } = Astro.params;
+
+if (!id) return Astro.redirect("/404");
+
 // Get appointment info
 const appointment = await db
   .select({
     date: Appointments.date,
+    time: Appointments.time,
     patientName: Patients.firstName,
     healthInsurance: Patients.healthInsurance,
     tutorName: Tutors.firstName,
@@ -17,15 +21,10 @@ const appointment = await db
   .where(eq(Appointments.id, id))
   .innerJoin(Patients, eq(Appointments.patientId, Patients.id))
   .innerJoin(Tutors, eq(Patients.tutorId, Tutors.id));
-console.log(appointment);
 
-if (appointment.length < 1) return Astro.redirect("/404");
+if (appointment.length <= 0) return Astro.redirect("/404");
 
-const { date, patientName, healthInsurance, tutorName } = appointment[0];
-
-// Format date
-const appointmentdate = format(date, "D MMMM YYYY", "es");
-const appointmentTime = format(date, "HH:mm");
+const { date, time, patientName, healthInsurance, tutorName } = appointment[0];
 ---
 
 <section>
@@ -33,11 +32,11 @@ const appointmentTime = format(date, "HH:mm");
   <article>
     <div>
       <strong>Fecha:</strong>
-      <span>{appointmentdate}</span>
+      <span>{date}</span>
     </div>
     <div>
       <strong>Hora:</strong>
-      <span>{appointmentTime}</span>
+      <span>{time}</span>
     </div>
     <div>
       <strong>Paciente:</strong>
@@ -52,3 +51,14 @@ const appointmentTime = format(date, "HH:mm");
     </div>
   </article>
 </section>
+
+<script>
+  // Clean the localStorage
+  window.addEventListener("DOMContentLoaded", (event) => {
+    localStorage.removeItem("storedDate");
+    localStorage.removeItem("storedTime");
+    localStorage.removeItem("professionalId");
+    localStorage.removeItem("professionalAddress");
+    localStorage.removeItem("modality");
+  });
+</script>
