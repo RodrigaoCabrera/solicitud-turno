@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode, RefObject, useEffect, useRef } from "react";
 import "./styles.css";
 import { format, parse } from "@formkit/tempo";
 import Card from "../appointment/Card";
@@ -21,6 +21,7 @@ interface ModalProps extends HandleModal {
 interface TriggerProps extends HandleModal {
   action: "open" | "close";
   children: ReactNode;
+  isSelectedDate?: boolean;
 }
 export function Modal({
   dialogRef,
@@ -82,17 +83,30 @@ export function Modal({
   );
 }
 
-export function ModalTrigger({ handleModal, action, children }: TriggerProps) {
+export function ModalTrigger({
+  handleModal,
+  action,
+  children,
+  isSelectedDate,
+}: TriggerProps) {
   return (
-    <button
-      onClick={() => handleModal(action)}
-      className={`px-3 py-1.5 duration-150 rounded-full  ${
-        action === "open"
-          ? "text-sm font-semibold uppercase bg-[#D9D9D9] hover:bg-[#cecdcd]"
-          : "text-xs text-[#222B45]  underline"
-      }`}
-    >
-      {children}
-    </button>
+    <>
+      <button
+        onClick={() => handleModal(action)}
+        className={`modal-trigger px-3 py-1.5 duration-150 rounded-full  ${
+          action === "open"
+            ? "text-sm font-semibold uppercase bg-[#D9D9D9] hover:bg-[#cecdcd]"
+            : "text-xs text-[#222B45]  underline"
+        }`}
+        disabled={!isSelectedDate}
+        popovertarget={isSelectedDate ? "" : "tooltip"}
+      >
+        {children}
+      </button>
+
+      <div className="modal-tooltip" id="tooltip" popover>
+        <p>Debes seleccionar una fecha</p>
+      </div>
+    </>
   );
 }

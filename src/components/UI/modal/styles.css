@@ -18,3 +18,36 @@
     background-color: rgba(0, 0, 0, 0.5);
   }
 }
+button.modal-trigger[popovertarget="tooltip"] {
+  anchor-name: --anchor;
+}
+.modal-tooltip {
+  display: none;
+  position: absolute;
+  position-anchor: --anchor;
+  inset-area: top;
+  /*  If no space on left, swap to the right  */
+  position-try-options: flip-inline;
+  background-color: #cecdcd;
+  margin-bottom: 10px;
+  padding: 2px 20px;
+  padding-bottom: 0;
+  border-radius: 50px;
+}
+.modal-tooltip::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  height: 0;
+  width: 0;
+  pointer-events: none;
+  border: solid transparent;
+  border-top-color: #cecdcd;
+  border-width: 8px;
+  margin-left: -8px;
+}
+
+button[popovertarget="tooltip"]:hover + #tooltip {
+  display: inline-block;
+}

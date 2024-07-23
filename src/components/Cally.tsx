@@ -230,7 +230,7 @@ function Cally({
     };
   });
 
-  const [isSelectedDate, setIsSelectedDate] = useState<Boolean>(
+  const [isSelectedDate, setIsSelectedDate] = useState<boolean>(
     () => !!value.calendarTime && !!value.modality
   );
 
@@ -291,7 +291,11 @@ function Cally({
         professionalId={professionalData.id}
         professionalAddress={professionalData.address}
       />
-      <ModalTrigger action="open" handleModal={handleModal}>
+      <ModalTrigger
+        action="open"
+        handleModal={handleModal}
+        isSelectedDate={isSelectedDate}
+      >
         <span>Confirmar</span>
       </ModalTrigger>
     </>
