@@ -87,7 +87,7 @@ export function ModalTrigger({
   handleModal,
   action,
   children,
-  isSelectedDate,
+  isSelectedDate = true,
 }: TriggerProps) {
   return (
     <>
