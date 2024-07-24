@@ -1,0 +1,142 @@
+---
+import Input from "@/astro-components/UI/Input.astro";
+import InputError from "@/astro-components/UI/InputError.astro";
+import SelectInput from "@/astro-components/UI/SelectInput.astro";
+import Typography from "@/astro-components/UI/Typography.astro";
+
+interface FormData {
+  patientFirstName: string;
+  patientLastName: string;
+  patientDni: string;
+  patientAge: string;
+  patientGender: string;
+  patientType: string;
+  healthInsurance: string;
+  tutorFirstName: string;
+  tutorLastName: string;
+  tutorEmail: string;
+  tutorDni: string;
+  tutorPhone: string;
+  relationshipWithThePatient: string;
+  date: string;
+  time: string;
+  professionalId: string;
+  modality: string;
+}
+interface Props {
+  errors?: { [key: string]: string[] };
+  formData: FormData;
+}
+
+const { errors, formData } = Astro.props;
+---
+
+<section class="flex flex-col gap-y-1">
+  <Typography as="h2" variant="lg" color="darkText" class="font-medium mb-2">
+    ¿Para quién es el turno?</Typography
+  >
+  <Input
+    label="Nombre"
+    type="text"
+    name="patientFirstName"
+    id="patientFirstName"
+    value={formData.patientFirstName}
+    required
+  />
+  <InputError
+    errors={errors}
+    erroKey="patient.firstName"
+    errorId="patientFirstNameError"
+  />
+  <Input
+    label="Apellido"
+    type="text"
+    id="patientLastName"
+    name="patientLastName"
+    value={formData.patientLastName}
+    required
+  />
+  <InputError
+    errors={errors}
+    erroKey="patient.lastName"
+    errorId="patientLastNameError"
+  />
+  <Input
+    label="DNI"
+    type="text"
+    id="patientDni"
+    name="patientDni"
+    value={formData.patientDni}
+    required
+  />
+  <InputError errors={errors} erroKey="patient.dni" errorId="patientDniError" />
+  <Input
+    label="Edad"
+    type="tel"
+    id="patientAge"
+    name="patientAge"
+    value={formData.patientAge}
+    required
+  />
+  <InputError errors={errors} erroKey="patient.age" errorId="patientAgeError" />
+  <SelectInput
+    label="Género"
+    name="patientGender"
+    id="patientGender"
+    value={formData.patientGender}
+  >
+    <option value="female" selected={formData.patientGender === "female"}
+      >Femenino</option
+    >
+    <option value="male" selected={formData.patientGender === "male"}
+      >Masculino</option
+    >
+    <option value="another" selected={formData.patientGender === "another"}
+      >Otro</option
+    >
+  </SelectInput>
+  <InputError
+    errors={errors}
+    erroKey="patient.gender"
+    errorId="patientGenderError"
+  />
+
+  <Input
+    label="Seguro Médico"
+    type="text"
+    id="healthInsurance"
+    name="healthInsurance"
+    value={formData.healthInsurance}
+  />
+  <InputError
+    errors={errors}
+    erroKey="patient.healthInsurance"
+    errorId="patientHealthInsuranceError"
+  />
+
+  <div class="flex justify-center gap-3 flex-wrap mt-1">
+    <section class="flex-1">
+      <Input
+        label="Paciente regular"
+        type="radio"
+        name="patientType"
+        id="regularPatient"
+        value="Paciente regular"
+      />
+      <InputError
+        errors={errors}
+        erroKey="patient.type"
+        errorId="patientTypeError"
+      />
+    </section>
+    <section class="flex-1">
+      <Input
+        label="Es la primera vez"
+        type="radio"
+        name="patientType"
+        id="newPatient"
+        value="Paciente nuevo"
+      />
+    </section>
+  </div>
+</section>

@@ -1,6 +1,72 @@
 ---
+type InputType =
+  | "text"
+  | "password"
+  | "email"
+  | "number"
+  | "radio"
+  | "tel"
+  | "url"
+  | "search"
+  | "date"
+  | "time"
+  | "datetime-local"
+  | "month"
+  | "week"
+  | "color"
+  | "file"
+  | "range";
+
+const radioInput = "radio" as InputType;
 interface Props {
   label: string;
-  type: string;
+  type: InputType | null | undefined;
+  id: string;
+  name: string;
+  value: string;
+  required?: boolean;
+  checked?: boolean;
 }
+
+const { label, type, id, name, value, required } = Astro.props;
 ---
+
+<div class="patientType flex flex-col">
+  <label
+    class={`patientTypeLabel text-m text-[#222B45] ${type === radioInput && "rounded-full text-center h-100 border-[1px] border-solid border-[#94A3B8] pt-2 px-2 p-1 cursor-pointer"}`}
+    for={id}>{label}</label
+  >
+  <input
+    class={`border-[1px] border-solid border-[#94A3B8] rounded-full bg-white focus-visible:outline-none focus-visible:border-[#222B45] p-1 px-3 ${type === radioInput && "hidden"}`}
+    type={type}
+    id={id}
+    name={name}
+    value={value}
+    required={required}
+  />
+</div>
+<style>
+  .patientType:has(input.selected) .patientTypeLabel {
+    background-color: #d9d9d9;
+  }
+</style>
+<script>
+  const $inputRadio = document.querySelectorAll("input[name='patientType']");
+
+  if ($inputRadio) {
+    $inputRadio.forEach(($radio, _, inputsArr) => {
+      $radio.addEventListener("change", (e: Event) => {
+        // Remove selected class
+        inputsArr.forEach(($el) => $el.classList.remove("selected"));
+
+        // Add selected class
+        const $inputEl = e.target as HTMLInputElement;
+
+        const isChecked = $inputEl.checked;
+        if (isChecked) {
+          $inputEl.classList.add("selected");
+        }
+      });
+    });
+  }
+</script>

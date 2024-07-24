@@ -1,0 +1,100 @@
+---
+import Input from "@/astro-components/UI/Input.astro";
+import InputError from "@/astro-components/UI/InputError.astro";
+import SelectInput from "@/astro-components/UI/SelectInput.astro";
+import Typography from "@/astro-components/UI/Typography.astro";
+
+interface FormData {
+  patientFirstName: string;
+  patientLastName: string;
+  patientDni: string;
+  patientAge: string;
+  patientGender: string;
+  patientType: string;
+  healthInsurance: string;
+  tutorFirstName: string;
+  tutorLastName: string;
+  tutorEmail: string;
+  tutorDni: string;
+  tutorPhone: string;
+  relationshipWithThePatient: string;
+  date: string;
+  time: string;
+  professionalId: string;
+  modality: string;
+}
+interface Props {
+  errors?: { [key: string]: string[] };
+  formData: FormData;
+}
+
+const { errors, formData } = Astro.props;
+---
+
+<section class="flex flex-col gap-y-1 mt-7">
+  <Typography as="h2" variant="lg" color="darkText" class="font-medium mb-2">
+    ¿Para quién es el turno?</Typography
+  >
+  <Input
+    label="Nombre"
+    type="text"
+    id="tutorFirstName"
+    name="tutorFirstName"
+    value={formData.tutorFirstName}
+  />
+  <InputError
+    errors={errors}
+    erroKey="tutor.firstName"
+    errorId="tutorFirstNameError"
+  />
+  <Input
+    label="Apellido"
+    type="text"
+    id="tutorLastName"
+    name="tutorLastName"
+    value={formData.tutorLastName}
+  />
+  <InputError
+    errors={errors}
+    erroKey="tutor.lastName"
+    errorId="tutorLastNameError"
+  />
+  <Input
+    label="DNI"
+    type="text"
+    id="tutorDni"
+    name="tutorDni"
+    value={formData.tutorDni}
+  />
+  <InputError errors={errors} erroKey="tutor.dni" errorId="tutorDniError" />
+  <Input
+    label="Email"
+    type="email"
+    id="tutorEmail"
+    name="tutorEmail"
+    value={formData.tutorEmail}
+  />
+  <InputError errors={errors} erroKey="tutor.email" errorId="tutorEmailError" />
+
+  <Input
+    label="Número de teléfono"
+    type="text"
+    id="tutorPhone"
+    name="tutorPhone"
+    value={formData.tutorPhone}
+  />
+  <InputError errors={errors} erroKey="tutor.phone" errorId="tutorPhoneError" />
+
+  <Input
+    label="Vínculo con el paciente"
+    type="text"
+    id="relationshipWithThePatient"
+    name="relationshipWithThePatient"
+    value={formData.relationshipWithThePatient}
+  />
+  <InputError
+    errors={errors}
+    erroKey="tutor.relationshipWithThePatient"
+    errorId="relationshipWithThePatientError"
+  />
+</section>

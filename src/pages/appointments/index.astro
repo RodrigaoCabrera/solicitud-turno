@@ -2,7 +2,13 @@
 import { flatten, safeParse } from "valibot";
 import { appoinmentDataSchema } from "@/utils/appoinmentDataSchema";
 import InputError from "@/astro-components/UI/InputError.astro";
-import { format, parse, date, offset, applyOffset } from "@formkit/tempo";
+import GoBack from "@/astro-components/UI/GoBack.astro";
+import AppointmentsForm from "./AppointmentsForm.astro";
+import Layout from "@/layouts/Layout.astro";
+import FormPatientSection from "@/sections/appointments/FormPatientSection.astro";
+import FormTutorSection from "@/sections/appointments/FormTutorSection.astro";
+import Button from "@/astro-components/UI/Button.astro";
+import Typography from "@/astro-components/UI/Typography.astro";
 
 let errors;
 let formData = {
@@ -129,268 +135,85 @@ if (Astro.request.method === "POST") {
 }
 ---
 
-<form method="POST">
-  <!--  TODO: Create componente for each form type -->
-  <h3>Datos del Paciente</h3>
-  <div>
-    <label for="patientFirstName">Nombre:</label>
-    <input
-      type="text"
-      id="patientFirstName"
-      name="patientFirstName"
-      value={formData.patientFirstName}
-      required
-    />
-    <InputError
-      errors={errors}
-      erroKey="patient.firstName"
-      errorId="patientFirstNameError"
-    />
-  </div>
-  <div>
-    <label for="patientLastName">Apellido:</label>
-    <input
-      type="text"
-      id="patientLastName"
-      name="patientLastName"
-      value={formData.patientLastName}
-      required
-    />
-    <InputError
-      errors={errors}
-      erroKey="patient.lastName"
-      errorId="patientLastNameError"
-    />
-  </div>
-  <div>
-    <label for="patientDni">DNI:</label>
-    <input
-      type="text"
-      id="patientDni"
-      name="patientDni"
-      value={formData.patientDni}
-    />
-    <InputError
-      errors={errors}
-      erroKey="patient.dni"
-      errorId="patientDniError"
-    />
-  </div>
-  <div>
-    <label for="patientAge">Edad:</label>
-    <input
-      type="tel"
-      id="patientAge"
-      name="patientAge"
-      value={formData.patientAge}
-    />
-    <InputError
-      errors={errors}
-      erroKey="patient.age"
-      errorId="patientAgeError"
-    />
-  </div>
-  <div>
-    <label for="patientGender">Género:</label>
-    <select name="patientGender" id="patientGender">
-      <option value="female" selected={formData.patientGender === "female"}
-        >Femenino</option
+<Layout title="Formulario de solicitud de turno">
+  <section>
+    <GoBack label="Regresar" to="/calendar" />
+
+    <form method="POST" class="mt-3">
+      <FormPatientSection formData={formData} errors={errors} />
+
+      <FormTutorSection formData={formData} errors={errors} />
+
+      <!-- Hidden appointment fields -->
+      <div class="hidden">
+        <input
+          type="text"
+          id="professionalId"
+          name="professionalId"
+          value={formData.professionalId}
+        />
+        <input type="text" id="date" name="date" value={formData.date} />
+        <input type="text" id="time" name="time" value={formData.time} />
+        <input
+          type="text"
+          id="modality"
+          name="modality"
+          value={formData.modality}
+        />
+      </div>
+
+      <Button as="button" type="submit" class="w-full mt-3"
+        ><Typography
+          as="span"
+          variant="sm"
+          color="black"
+          class="font-semibold uppercase"
+        >
+          Finalizar
+        </Typography></Button
       >
-      <option value="male" selected={formData.patientGender === "male"}
-        >Masculino</option
-      >
-      <option value="another" selected={formData.patientGender === "another"}
-        >Otro</option
-      >
-    </select>
-    <InputError
-      errors={errors}
-      erroKey="patient.gender"
-      errorId="patientGenderError"
-    />
-  </div>
+    </form>
 
-  <div>
-    <label for="healthInsurance">Seguro Médico</label>
-    <input
-      type="text"
-      id="healthInsurance"
-      name="healthInsurance"
-      value={formData.healthInsurance}
-    />
-    <InputError
-      errors={errors}
-      erroKey="patient.healthInsurance"
-      errorId="patientHealthInsuranceError"
-    />
-  </div>
+    <script>
+      // Fuction to clear the error message
+      function clearError(inputId: string) {
+        const errorSpan = document.getElementById(inputId + "Error");
 
-  <div>
-    <label for="regularPatient">Paciente regular</label>
-    <input
-      type="radio"
-      name="patientType"
-      id="regularPatient"
-      value="Paciente regular"
-      checked={formData.patientType === "Paciente regular"}
-    />
-    <label for="newPatient">Es la primera vez</label>
-    <input
-      type="radio"
-      name="patientType"
-      id="newPatient"
-      value="Paciente nuevo"
-      checked={formData.patientType === "Paciente nuevo"}
-    />
-    <InputError
-      errors={errors}
-      erroKey="patient.type"
-      errorId="patientTypeError"
-    />
-  </div>
+        if (errorSpan) {
+          errorSpan.textContent = "";
+        }
+      }
 
-  <h3 class="mt-8">Datos del Tutor</h3>
-  <div>
-    <label for="tutorFirstName">Nombre:</label>
-    <input
-      type="text"
-      id="tutorFirstName"
-      name="tutorFirstName"
-      value={formData.tutorFirstName}
-    />
-    <InputError
-      errors={errors}
-      erroKey="tutor.firstName"
-      errorId="tutorFirstNameError"
-    />
-  </div>
-  <div>
-    <label for="tutorLastName">Apellido:</label>
-    <input
-      type="text"
-      id="tutorLastName"
-      name="tutorLastName"
-      value={formData.tutorLastName}
-    />
-    <InputError
-      errors={errors}
-      erroKey="tutor.lastName"
-      errorId="tutorLastNameError"
-    />
-  </div>
-  <div>
-    <label for="tutorDni">DNI:</label>
-    <input
-      type="text"
-      id="tutorDni"
-      name="tutorDni"
-      value={formData.tutorDni}
-    />
-    <InputError errors={errors} erroKey="tutor.dni" errorId="tutorDniError" />
-  </div>
-  <div>
-    <label for="tutorEmail">Email:</label>
-    <input
-      type="email"
-      id="tutorEmail"
-      name="tutorEmail"
-      value={formData.tutorEmail}
-    />
-    <InputError
-      errors={errors}
-      erroKey="tutor.email"
-      errorId="tutorEmailError"
-    />
-  </div>
-  <div>
-    <label for="tutorPhone">Número de teléfono:</label>
-    <input
-      type="text"
-      id="tutorPhone"
-      name="tutorPhone"
-      value={formData.tutorPhone}
-    />
-    <InputError
-      errors={errors}
-      erroKey="tutor.phone"
-      errorId="tutorPhoneError"
-    />
-  </div>
-  <div>
-    <label for="relationshipWithThePatient">Vínculo con el paciente:</label>
-    <input
-      type="text"
-      id="relationshipWithThePatient"
-      name="relationshipWithThePatient"
-      value={formData.relationshipWithThePatient}
-    />
-    <InputError
-      errors={errors}
-      erroKey="tutor.relationshipWithThePatient"
-      errorId="relationshipWithThePatientError"
-    />
-  </div>
+      // Add event listeners to the input fields
+      document.querySelectorAll("input, select").forEach((input) => {
+        input.addEventListener("input", () => clearError(input.id));
+      });
 
-  <div>
-    <input
-      type="text"
-      id="professionalId"
-      name="professionalId"
-      value={formData.professionalId}
-    />
-    <input type="text" id="date" name="date" value={formData.date} />
-    <input type="text" id="time" name="time" value={formData.time} />
-    <input
-      type="text"
-      id="modality"
-      name="modality"
-      value={formData.modality}
-    />
-  </div>
+      function addDateFromLocalStorage() {
+        const date = localStorage.getItem("storedDate");
+        const time = localStorage.getItem("storedTime");
+        const professionalId = localStorage.getItem("professionalId");
+        const modality = localStorage.getItem("modality");
 
-  <div>
-    <button type="submit">Enviar Solicitud</button>
-  </div>
-</form>
+        const $dateInput = document.querySelector("#date") as HTMLInputElement;
+        const $timeInput = document.querySelector("#time") as HTMLInputElement;
 
-<script>
-  // Fuction to clear the error message
-  function clearError(inputId: string) {
-    const errorSpan = document.getElementById(inputId + "Error");
+        const $professionalIdInput = document.querySelector(
+          "#professionalId"
+        ) as HTMLInputElement;
 
-    if (errorSpan) {
-      errorSpan.textContent = "";
-    }
-  }
+        const $modalityInput = document.querySelector(
+          "#modality"
+        ) as HTMLInputElement;
 
-  // Add event listeners to the input fields
-  document.querySelectorAll("input, select").forEach((input) => {
-    input.addEventListener("input", () => clearError(input.id));
-  });
-
-  function addDateFromLocalStorage() {
-    const date = localStorage.getItem("storedDate");
-    const time = localStorage.getItem("storedTime");
-    const professionalId = localStorage.getItem("professionalId");
-    const modality = localStorage.getItem("modality");
-
-    const $dateInput = document.querySelector("#date") as HTMLInputElement;
-    const $timeInput = document.querySelector("#time") as HTMLInputElement;
-
-    const $professionalIdInput = document.querySelector(
-      "#professionalId"
-    ) as HTMLInputElement;
-
-    const $modalityInput = document.querySelector(
-      "#modality"
-    ) as HTMLInputElement;
-
-    if (date && time && professionalId && modality) {
-      $dateInput.value = date;
-      $timeInput.value = time;
-      $professionalIdInput.value = professionalId;
-      $modalityInput.value = modality;
-    }
-  }
-  addDateFromLocalStorage();
-</script>
+        if (date && time && professionalId && modality) {
+          $dateInput.value = date;
+          $timeInput.value = time;
+          $professionalIdInput.value = professionalId;
+          $modalityInput.value = modality;
+        }
+      }
+      addDateFromLocalStorage();
+    </script>
+  </section>
+</Layout>
