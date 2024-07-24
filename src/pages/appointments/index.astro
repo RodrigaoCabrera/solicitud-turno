@@ -113,10 +113,8 @@ async function handlePostRequest() {
     const data = await response.json();
     if (!response.ok) {
       errors = { api: "Error al procesar la solicitud" };
-      return new Response(
-        "Error al procesar la solicitud. Vuelve a intentarlo!",
-        { status: 400 }
-      );
+      console.error(data.message);
+      return;
     }
     return Astro.redirect(`/appointments/${data.id}`);
   } catch (e) {

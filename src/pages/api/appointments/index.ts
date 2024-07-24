@@ -9,7 +9,7 @@ import {
   Availability,
   ProfessionalProfile,
 } from "astro:db";
-import { date, parse } from "@formkit/tempo";
+import { date } from "@formkit/tempo";
 import { safeParse } from "valibot";
 
 import { appoinmentDataSchema } from "@/utils/appoinmentDataSchema";
@@ -81,7 +81,7 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  const appointmentId = generateId(JSON.stringify(appointment.date));
+  const appointmentId = generateId(appointment.date + appointment.time);
   const patientId = generateId(patient.dni);
   const tutorId = generateId(tutor.dni);
 
