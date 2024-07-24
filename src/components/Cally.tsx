@@ -42,7 +42,8 @@ interface ProfessionalProfile {
 
 interface Appointments {
   id: string;
-  date: Date;
+  date: string;
+  time: string;
   isActive: boolean;
   professionalId: string;
   patientId: string;
@@ -79,39 +80,38 @@ function Picker({
 
   const isfilledSchedule = (date: Date) => {
     // Filtrar los appointments que coincidan con el 'date'
-    const filteredAppointments = appointments.filter(
+    const selectedDayAppointments = appointments.filter(
       (appointment: Appointments) => {
         const calendarDate = format({
           date,
           format: "YYYY-MM-DD",
           tz: "Pacific/Chatham",
         });
-        const appointmentDate = format(appointment.date, "YYYY-MM-DD");
-        return isEqual(calendarDate, appointmentDate);
+        return isEqual(calendarDate, appointment.date);
       }
     );
 
-    if (filteredAppointments.length <= 0) {
+    if (selectedDayAppointments.length <= 0) {
       return false;
     }
 
     const session = availability.filter(
-      (data: Availability) => data.dayOfWeek === date.getDay()
+      (availabilityData: Availability) =>
+        availabilityData.dayOfWeek === date.getUTCDay()
     );
 
     for (let i = 0; i <= availability.length; i++) {
       const availabilityObj = availability[i];
-      if (availabilityObj.dayOfWeek === date.getDay()) {
+      if (availabilityObj.dayOfWeek === date.getUTCDay()) {
         // Determinar si la cantidad de sesiones es igual a la cantidad de appointment
-        const appointmentsAmount = filteredAppointments.length;
-        return availabilityObj.sessionAmount === appointmentsAmount;
+        const selectedDayAppointmentsAmount = selectedDayAppointments.length;
+        return availabilityObj.sessionAmount === selectedDayAppointmentsAmount;
       }
     }
 
     return false;
   };
 
-  // Determinar cuantas sesiones tiene por dia segun la cantidad de minutos por sesion. Luego ver cuantos appointment tiene en ese dia de la semana, si ya hay existe la cantidad de sesiones diaria, ese día debe estar deshabilitado
   const isDateDisallowed = (date: Date) => {
     if (availableDays.length <= 0) {
       return true;
