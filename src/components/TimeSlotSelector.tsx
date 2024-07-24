@@ -21,7 +21,8 @@ interface Availability {
 }
 interface Appointments {
   id: string;
-  date: Date;
+  date: string;
+  time: string;
   isActive: boolean;
   professionalId: string;
   patientId: string;
@@ -39,7 +40,7 @@ interface Props {
 }
 interface Slots {
   time: string;
-  appointmentExist: boolean;
+  existAppointment: boolean;
 }
 const TimeSlotSelector: React.FC<Props> = ({
   availability,
@@ -64,7 +65,8 @@ const TimeSlotSelector: React.FC<Props> = ({
   const [slots, setSlots] = useState<Slots[]>([]);
 
   const getCurrentDateAvailability = (): Availability | undefined => {
-    const selectedDate = date(value.calendarDate + "T00:00:00Z");
+    const selectedDate = date(value.calendarDate);
+
     return availability.find(
       (availabilityDay) => availabilityDay.dayOfWeek === selectedDate.getDay()
     );
@@ -79,28 +81,31 @@ const TimeSlotSelector: React.FC<Props> = ({
     const endTime =
       type === "AM" ? availability.endTimeAM : availability.endTimePM;
 
-    const start = new Date(`${value.calendarDate}T${startTime}`);
-    const end = new Date(`${value.calendarDate}T${endTime}`);
+    // TODO: Converter date to local hour
+    const startDate = date(`${value.calendarDate} ${startTime}`);
+    const endDate = date(`${value.calendarDate} ${endTime}`);
     const interval = sessionTime * 60 * 1000; // Convert to milliseconds
 
     const newSlots = [];
-    let current = new Date(start);
-
-    while (current < end) {
+    let current = startDate;
+    while (current < endDate) {
       // Verify if appointment exists
-      const appointmentExist = appointments.some((appointment) =>
-        isEqual(current, appointment.date)
-      );
+      const existAppointment = appointments.some((appointment) => {
+        const appointmentDate = `${appointment.date} ${appointment.time}`;
+        const currentDate = format({
+          date: current,
+          format: "YYYY-MM-DD HH:mm",
+          tz: "America/Argentina/Buenos_Aires",
+        });
+
+        return isEqual(appointmentDate, currentDate);
+      });
       newSlots.push({
-        time: current.toLocaleTimeString("es-ES", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        appointmentExist,
+        time: format(current, "HH:mm"),
+        existAppointment,
       });
       current = new Date(current.getTime() + interval);
     }
-
     return newSlots;
   };
 
@@ -182,7 +187,7 @@ const TimeSlotSelector: React.FC<Props> = ({
                 value={slot.time}
                 onChange={onChange}
                 defaultChecked={slot.time === value.calendarTime}
-                disabled={slot.appointmentExist}
+                disabled={slot.existAppointment}
               />
               <label
                 htmlFor={slot.time}
