@@ -105,7 +105,7 @@ export function ModalTrigger({
       </button>
 
       <div className="modal-tooltip" id="tooltip" popover>
-        <p>Debes seleccionar una fecha</p>
+        <p>Debes seleccionar una modalidad y fecha</p>
       </div>
     </>
   );
