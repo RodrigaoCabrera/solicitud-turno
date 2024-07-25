@@ -6,8 +6,8 @@ import { db } from "astro:db";
 
 interface OpenHours {
   days: number[];
-  openHoursAM: string;
-  openHoursPM: string;
+  am: string;
+  pm: string;
 }
 /* availability data from DB */
 const availability = await db.select().from(Availability);
@@ -16,20 +16,18 @@ const availability = await db.select().from(Availability);
 let openHours: OpenHours[] = [];
 
 for (let el of availability) {
-  const openHoursAM = `${el.startTimeAM}-${el.endTimeAM}`;
-  const openHoursPM = `${el.startTimePM}-${el.endTimePM}`;
+  const am = `${el.startTimeAM}-${el.endTimeAM}`;
+  const pm = `${el.startTimePM}-${el.endTimePM}`;
 
   const existOpenHours = openHours.find(
-    (openHour: any) =>
-      openHour.openHoursAM === openHoursAM &&
-      openHour.openHoursPM === openHoursPM
+    (openHour: OpenHours) => openHour.am === am && openHour.pm === pm
   );
 
   if (!existOpenHours) {
     openHours.push({
       days: [el.dayOfWeek],
-      openHoursAM,
-      openHoursPM,
+      am,
+      pm,
     });
     continue;
   }
@@ -39,13 +37,13 @@ for (let el of availability) {
 
 // Get day
 const daysOfWeek = {
-  0: "Lunes",
-  1: "Martes",
-  2: "Miércoles",
-  3: "Jueves",
-  4: "Viernes",
-  5: "Sábado",
-  6: "Domingo",
+  0: "Domingo",
+  1: "Lunes",
+  2: "Martes",
+  3: "Miércoles",
+  4: "Jueves",
+  5: "Viernes",
+  6: "Sábado",
 };
 
 // Determinate if days are secuencial
@@ -101,8 +99,8 @@ const getDaysRange = (days: number[]) => {
         {openHours.map((availableDays) => (
           <Typography as="p" variant="xs" color="lightText">
             <span>{getDaysRange(availableDays.days)}</span> |
-            <span>{availableDays.openHoursAM} AM</span>
-            <span>{availableDays.openHoursPM} PM</span>
+            <span>{availableDays.am} AM</span>
+            <span>{availableDays.pm} PM</span>
           </Typography>
         ))}
       </section>
