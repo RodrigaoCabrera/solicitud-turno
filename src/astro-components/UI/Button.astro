@@ -1,14 +1,23 @@
 ---
 import type { HTMLTag, Polymorphic } from "astro/types";
 
-type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }>;
+type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag; variant?: string }>;
 
-const { as: Tag, class: className, type, ...props } = Astro.props;
+const {
+  as: Tag,
+  class: className,
+  type,
+  variant = "primary",
+  ...props
+} = Astro.props;
 ---
 
 <Tag
   class:list={[
-    "px-3 py-1.5 duration-150 bg-[#D9D9D9] rounded-full hover:bg-[#cecdcd] active:shadow-lg",
+    "w-full px-2 py-1 duration-150 rounded-full",
+    `${variant === "primary" && "bg-[#D9D9D9]  hover:bg-[#cecdcd]"}`,
+    `${variant === "secondary" && "bg-transparent border-[1px] border-solid border-[#94A3B8]"}`,
+    `${variant === "ghost" && "bg-transparent underline"}`,
     className,
   ]}
   {...props}

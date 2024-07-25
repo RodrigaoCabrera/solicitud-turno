@@ -1,6 +1,21 @@
 ---
-import { applyOffset, format } from "@formkit/tempo";
-import { db, eq, Patients, Tutors, Appointments } from "astro:db";
+import Layout from "@/layouts/Layout.astro";
+import Check from "@/astro-components/icons/Check.astro";
+import Office from "@/astro-components/icons/Office.astro";
+import HealthInsurance from "@/astro-components/icons/HealthInsurance.astro";
+import Typography from "@/astro-components/UI/Typography.astro";
+import {
+  db,
+  eq,
+  Patients,
+  Tutors,
+  Appointments,
+  ProfessionalProfile,
+} from "astro:db";
+import { format } from "@formkit/tempo";
+import CalendarIcon from "@/astro-components/icons/CalendarIcon.astro";
+import Clock from "@/astro-components/icons/Clock.astro";
+import Button from "@/astro-components/UI/Button.astro";
 interface Props {
   id: string;
 }
@@ -13,45 +28,186 @@ const appointment = await db
   .select({
     date: Appointments.date,
     time: Appointments.time,
+    modality: Appointments.modality,
     patientName: Patients.firstName,
+    patientLastName: Patients.lastName,
     healthInsurance: Patients.healthInsurance,
     tutorName: Tutors.firstName,
+    tutorLastName: Tutors.lastName,
+    address: ProfessionalProfile.address,
   })
   .from(Appointments)
   .where(eq(Appointments.id, id))
   .innerJoin(Patients, eq(Appointments.patientId, Patients.id))
-  .innerJoin(Tutors, eq(Patients.tutorId, Tutors.id));
+  .innerJoin(Tutors, eq(Patients.tutorId, Tutors.id))
+  .innerJoin(
+    ProfessionalProfile,
+    eq(Appointments.professionalId, ProfessionalProfile.id)
+  );
 
 if (appointment.length <= 0) return Astro.redirect("/404");
 
-const { date, time, patientName, healthInsurance, tutorName } = appointment[0];
+const {
+  date,
+  time,
+  modality,
+  patientName,
+  patientLastName,
+  healthInsurance,
+  tutorName,
+  tutorLastName,
+  address,
+} = appointment[0];
+
+const appointmentDate = format(date, "full", "es");
 ---
 
-<section>
-  <h1>Turno reservado</h1>
-  <article>
-    <div>
-      <strong>Fecha:</strong>
-      <span>{date}</span>
-    </div>
-    <div>
-      <strong>Hora:</strong>
-      <span>{time}</span>
-    </div>
-    <div>
-      <strong>Paciente:</strong>
-      <span>{patientName}</span>
-    </div>
-    <div>
-      <strong>Tutor:</strong>
-      <span>{tutorName}</span>
-    </div>
-    <div>
-      <span>{healthInsurance}</span>
-    </div>
-  </article>
-</section>
+<Layout title="Turno agendado">
+  <section
+    class="flex flex-col items-center justify-center w-full rounded-lg bg-[#F8F8F8] py-4 mt-3"
+  >
+    <span class="w-fit">
+      <Check width="63" height="63" viewBox="0 0 63 63" fill="none" />
+    </span>
+    <Typography
+      as="h1"
+      variant="l"
+      color="darkText"
+      class="font-semibold mt-3 mb-2">¡Listo!</Typography
+    >
+    <Typography
+      as="p"
+      variant="m"
+      color="darkText"
+      class="font-medium mb-2 max-w-[220px] text-center leading-4"
+      >Ya agendaste tu turno con la Dra. Carolina Fagalde.</Typography
+    >
+    <article class="px-10">
+      <div class="flex gap-3 items-center">
+        <span>
+          <CalendarIcon
+            width="15"
+            height="15"
+            viewBox="0 0 15 15"
+            fill="none"
+          />
+        </span>
+        <Typography
+          as="p"
+          variant="sm"
+          color="black"
+          class="first-letter:uppercase pt-1"
+        >
+          {appointmentDate}
+        </Typography>
+      </div>
+      <div class="flex gap-3 items-center">
+        <span>
+          <Clock width="15" height="15" viewBox="0 0 15 15" fill="none" />
+        </span>
+        <Typography as="p" variant="sm" color="black" class="pt-1">
+          {time}
+        </Typography>
+      </div>
+      <div class="flex gap-3">
+        <span class="pt-1">
+          <Office width="15" height="15" viewBox="0 0 15 15" fill="none" />
+        </span>
+        <Typography as="p" variant="sm" color="black">
+          {
+            modality === "online"
+              ? "Online"
+              : `Presencial - Consultorio: ${address}`
+          }
+        </Typography>
+      </div>
+      <div class="flex gap-3 items-center">
+        <span class="pt-1">
+          <HealthInsurance
+            width="15"
+            height="15"
+            viewBox="0 0 15 15"
+            fill="none"
+          />
+        </span>
+        <Typography as="p" variant="sm" color="black" class="pt-1">
+          {healthInsurance}
+        </Typography>
+      </div>
 
+      <div
+        class="flex gap-1 items-center pt-2 mt-2 border-t-[1px] border-solid border-black"
+      >
+        <Typography as="span" variant="sm" color="black">
+          Paciente:
+        </Typography>
+        <Typography as="span" variant="sm" color="black">
+          {patientName}
+        </Typography>
+        <Typography as="span" variant="sm" color="black">
+          {patientLastName}
+        </Typography>
+      </div>
+      <div class="flex gap-1 items-center">
+        <Typography as="span" variant="sm" color="black"> Tutor: </Typography>
+        <Typography as="span" variant="sm" color="black">
+          {tutorName}
+        </Typography>
+        <Typography as="span" variant="sm" color="black">
+          {tutorLastName}
+        </Typography>
+      </div>
+    </article>
+  </section>
+  <section>
+    <article>
+      <Typography
+        as="p"
+        variant="xs"
+        color="darkText"
+        class="mb-2 mt-1 max-w-[250px] text-center leading-4 mx-auto"
+        >Recibirás la confirmación de tu turno por mail y podrás agendarlo en
+        Google Calendar. Te pedimos llegar con unos 10 o 15min de antelación
+        para evitar contratiempos.
+      </Typography>
+    </article>
+    <article class="mt-3">
+      <Typography
+        as="p"
+        variant="xs"
+        color="darkText"
+        class="mb-2 max-w-[250px] text-center leading-4 mx-auto"
+        >En el caso de tener que abonar la consulta podrás gestionar el pago
+        directamente en el consultorio.
+      </Typography>
+    </article>
+
+    <Button as="a" variant="secondary" class="mt-5 mb-2 flex" href="/">
+      <Typography
+        as="span"
+        variant="sm"
+        color="darkText"
+        class="uppercase mx-auto"
+        >Volver al inicio
+      </Typography>
+    </Button>
+    <Button
+      as="a"
+      class="inline-block"
+      class="flex"
+      variant="ghost"
+      href="/cancelar-turno"
+    >
+      <Typography
+        as="span"
+        variant="xs"
+        color="darkText"
+        class="text-center mx-auto"
+        >Cancelar turno
+      </Typography>
+    </Button>
+  </section>
+</Layout>
 <script>
   // Clean the localStorage
   window.addEventListener("DOMContentLoaded", (event) => {
