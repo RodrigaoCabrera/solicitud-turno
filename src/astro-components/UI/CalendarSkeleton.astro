@@ -1,0 +1,56 @@
+<div class="calendar-container skeleton">
+  <p class="text-sm text-[#222B45] mb-1">Modalidad</p>
+  <div class="skeleton-buttons">
+    <div class="skeleton-button"></div>
+    <div class="skeleton-button"></div>
+  </div>
+  <div class="skeleton-calendar">
+    <div class="skeleton-calendar-body"></div>
+  </div>
+  <div class="skeleton-confirm"></div>
+</div>
+
+<style>
+  .calendar-container {
+    border-radius: 8px;
+  }
+
+  .skeleton-button,
+  .skeleton-calendar-header,
+  .skeleton-calendar-body,
+  .skeleton-confirm {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+  }
+  .skeleton-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .skeleton-button {
+    width: 48%;
+    height: 26px;
+    border-radius: 1rem;
+  }
+  .skeleton-calendar-body {
+    height: 305px;
+    border-radius: 15px;
+  }
+
+  .skeleton-confirm {
+    height: 33px;
+    margin-top: 1rem;
+    border-radius: 50px;
+  }
+
+  @keyframes loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+</style>
