@@ -13,4 +13,5 @@ export default defineConfig({
   experimental: {
     serverIslands: true,
   },
+  prefetch: true,
 });

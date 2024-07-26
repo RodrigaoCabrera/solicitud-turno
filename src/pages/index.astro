@@ -11,7 +11,12 @@ import ProfessionalInfo from "@/sections/home/ProfessionalInfo.astro";
 <Layout title="Turnos app">
   <ProfessionalInfo />
 
-  <Button as="a" href="/calendar" class="flex justify-center uppercase">
+  <Button
+    as="a"
+    href="/calendar"
+    class="flex justify-center uppercase"
+    data-astro-prefetch="viewport"
+  >
     <Typography as="span" variant="sm" color="black" class="font-semibold">
       Agendar turno
     </Typography>
