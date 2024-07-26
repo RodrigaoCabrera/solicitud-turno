@@ -12,6 +12,11 @@ calendar-date {
   }
   &::part(button) {
     border: none;
+    border-radius: 50px;
+    background-color: transparent;
+    padding: 3px;
+  }
+  &::part(button):hover {
     background-color: #fff;
   }
 
