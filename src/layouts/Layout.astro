@@ -29,6 +29,7 @@ const { title } = Astro.props;
 </html>
 <style is:global>
   :root {
+    --loading-animation: loading 1.5s infinite;
   }
   html {
     font-family: "League Spartan Variable", system-ui, sans-serif;
@@ -37,5 +38,15 @@ const { title } = Astro.props;
 
   &:has(#menuDrawerContainer.translate-x-0) {
     overflow: hidden;
+  }
+
+  /* Skeleton animation for loading */
+  @keyframes loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
   }
 </style>

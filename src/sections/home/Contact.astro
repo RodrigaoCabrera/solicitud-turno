@@ -3,6 +3,7 @@ import Location from "../../astro-components/icons/Location.astro";
 import Email from "../../astro-components/icons/Email.astro";
 import Phone from "../../astro-components/icons/Phone.astro";
 import Item from "../../astro-components/UI/Item.astro";
+import Typography from "@/astro-components/UI/Typography.astro";
 
 interface Props {
   address: string;
@@ -13,7 +14,10 @@ const { address, email, phone } = Astro.props;
 ---
 
 <section class="flex flex-col gap-y-1" id="contact">
-  <Item label={address}>
+  <Typography as="h1" variant="sm" color="darkText" class="mb-1">
+    Contacto
+  </Typography>
+  <Item>
     <Location
       width="15"
       height="15"
@@ -21,8 +25,11 @@ const { address, email, phone } = Astro.props;
       viewBox="0 0 15 15"
       slot="before-text"
     />
+    <Typography as="span" variant="xs" color="lightText">
+      {address}
+    </Typography>
   </Item>
-  <Item label={email}>
+  <Item>
     <Email
       width="15"
       height="15"
@@ -30,8 +37,11 @@ const { address, email, phone } = Astro.props;
       viewBox="0 0 15 15"
       slot="before-text"
     />
+    <Typography as="span" variant="xs" color="lightText">
+      {email}
+    </Typography>
   </Item>
-  <Item label={phone}>
+  <Item>
     <Phone
       width="15"
       height="15"
@@ -39,5 +49,8 @@ const { address, email, phone } = Astro.props;
       viewBox="0 0 15 15"
       slot="before-text"
     />
+    <Typography as="span" variant="xs" color="lightText">
+      {phone}
+    </Typography>
   </Item>
 </section>

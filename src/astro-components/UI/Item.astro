@@ -1,17 +1,12 @@
----
-import Typography from "./Typography.astro";
-
-interface Props {
-  label: string;
-}
-
-const { label } = Astro.props;
----
-
 <div class="flex gap-x-2">
   <slot name="before-text" />
-  <Typography as="span" variant="xs" color="lightText">
-    {label}
-  </Typography>
+  <slot />
   <slot name="after-text" />
 </div>
+<style>
+  .skeleton-text {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: var(--loading-animation);
+  }
+</style>

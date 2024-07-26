@@ -4,13 +4,15 @@ import Layout from "../layouts/Layout.astro";
 
 /* UI components */
 import Button from "@/astro-components/UI/Button.astro";
+import ProfessionalInfoSkeleton from "@/astro-components/UI/skeleton/ProfessionalInfoSkeleton.astro";
 import Typography from "@/astro-components/UI/Typography.astro";
 import ProfessionalInfo from "@/sections/home/ProfessionalInfo.astro";
 ---
 
 <Layout title="Turnos app">
-  <ProfessionalInfo />
-
+  <ProfessionalInfo server:defer>
+    <ProfessionalInfoSkeleton slot="fallback" />
+  </ProfessionalInfo>
   <Button
     as="a"
     href="/calendar"
