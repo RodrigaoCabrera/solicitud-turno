@@ -21,24 +21,13 @@ export default async function () {
   // Professional availability data
   await db.insert(Availability).values([
     {
-      id: 0,
-      dayOfWeek: 0,
-      startTimeAM: "09:00",
-      endTimeAM: "09:30",
-      startTimePM: "15:00",
-      endTimePM: "15:30",
-      sessionAmount: 2,
-      professionalId:
-        "22a3c85609d4d626bc01cd87df71d01f6bb9a62efce214d37b0d4faf4f3ebb74",
-    },
-    {
       id: 1,
       dayOfWeek: 1,
       startTimeAM: "09:00",
-      endTimeAM: "09:30",
+      endTimeAM: "11:00",
       startTimePM: "15:00",
       endTimePM: "16:00",
-      sessionAmount: 2,
+      sessionAmount: 3,
       professionalId:
         "22a3c85609d4d626bc01cd87df71d01f6bb9a62efce214d37b0d4faf4f3ebb74",
     },
@@ -49,7 +38,40 @@ export default async function () {
       endTimeAM: "11:00",
       startTimePM: "15:00",
       endTimePM: "16:00",
-      sessionAmount: 2,
+      sessionAmount: 6,
+      professionalId:
+        "22a3c85609d4d626bc01cd87df71d01f6bb9a62efce214d37b0d4faf4f3ebb74",
+    },
+    {
+      id: 3,
+      dayOfWeek: 3,
+      startTimeAM: "09:00",
+      endTimeAM: "11:00",
+      startTimePM: "15:00",
+      endTimePM: "16:00",
+      sessionAmount: 6,
+      professionalId:
+        "22a3c85609d4d626bc01cd87df71d01f6bb9a62efce214d37b0d4faf4f3ebb74",
+    },
+    {
+      id: 4,
+      dayOfWeek: 4,
+      startTimeAM: "09:00",
+      endTimeAM: "11:00",
+      startTimePM: "15:00",
+      endTimePM: "16:00",
+      sessionAmount: 6,
+      professionalId:
+        "22a3c85609d4d626bc01cd87df71d01f6bb9a62efce214d37b0d4faf4f3ebb74",
+    },
+    {
+      id: 5,
+      dayOfWeek: 5,
+      startTimeAM: "09:00",
+      endTimeAM: "11:00",
+      startTimePM: "15:00",
+      endTimePM: "16:00",
+      sessionAmount: 6,
       professionalId:
         "22a3c85609d4d626bc01cd87df71d01f6bb9a62efce214d37b0d4faf4f3ebb74",
     },
