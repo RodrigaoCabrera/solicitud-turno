@@ -1,0 +1,38 @@
+---
+/* Section components */
+import Profile from "@/sections/home/Profile.astro";
+import Contact from "@/sections/home/Contact.astro";
+import OpenHours from "@/sections/home/OpenHours.astro";
+/* DB */
+import { db, ProfessionalProfile } from "astro:db";
+
+let error = false;
+const getData = async () => {
+  try {
+    const professionalData = await db.select().from(ProfessionalProfile);
+    return professionalData;
+  } catch (error) {
+    console.error(error);
+    error = true;
+    return null;
+  }
+};
+const data = await getData();
+if (!data) {
+  return;
+}
+
+const { aboutMe, address, email, phone } = data[0];
+---
+
+{
+  !error ? (
+    <article class="relative flex flex-col gap-y-5 px-4 pt-32 pb-6 mt-14 bg-gray-100 rounded-lg">
+      <Profile title="Sobre mí" text={aboutMe} />
+      <OpenHours />
+      <Contact address={address} email={email} phone={phone} />
+    </article>
+  ) : (
+    <p>Ups! Hubo un error vuelve a intentarlo.</p>
+  )
+}
