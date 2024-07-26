@@ -30,11 +30,6 @@ const res = (
 export const POST: APIRoute = async ({ request }) => {
   const appointmentRequest = await request.json();
 
-  // Convert appointment date a Date object
-  /*  appointmentRequest.appointment.date = new Date(
-    appointmentRequest.appointment.date
-  );
- */
   // Validate appointment data
   const { success, output, issues } = safeParse(
     appoinmentDataSchema,
@@ -126,7 +121,7 @@ export const POST: APIRoute = async ({ request }) => {
       id: tutorId,
       ...tutor,
     })
-    .onConflictDoNothing();
+    .onConflictDoUpdate({ target: Tutors.id, set: { ...tutor } });
 
   // Add patient data
   await db

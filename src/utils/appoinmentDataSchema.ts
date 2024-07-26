@@ -3,44 +3,44 @@ import {
   string,
   email,
   number,
-  safeParse,
   pipe,
   nonEmpty,
-  toMinValue,
   maxLength,
   minLength,
   hash,
   picklist,
-  date as dateType,
   isoDate,
   isoTime,
+  trim,
 } from "valibot";
 
 // Email type
 const Email = pipe(
-  string("The email must be a valid email address"),
-  nonEmpty("Please enter your email."),
-  email("The email is badly formatted.")
+  string(),
+  nonEmpty("Por favor ingresa un email"),
+  email("El email tiene un formato incorrecto")
 );
 
 // DNI type
 const DNI = pipe(
   string(),
-  minLength(8, "The DNI must be at least 8 characters."),
-  maxLength(8, "The DNI must not exceed 8 characters.")
+  minLength(8, "El DNI debe tener al menos 8 carácteres"),
+  maxLength(8, "EL DNI no debe tener más 8 carácteres"),
+  trim()
 );
 
 // Patient type
 const PatientType = picklist(
   ["Paciente regular", "Paciente nuevo"],
-  "The patient type mst be one of the following options: Paciente regular or Paciente nuevo"
+  "El tipo de paciente debe ser una de las siguientes opciones: Paciente regular or Paciente nuevo"
 );
 
 // phone type
 const Phone = pipe(
   string(),
   minLength(10, "El número debe tener al menos 10 dígitos"),
-  maxLength(13, "The DNI must not exceed 8 characters.")
+  maxLength(13, "El número deber ser como máximo de 13 dígitos"),
+  trim()
 );
 
 // Hash ID
@@ -50,13 +50,13 @@ const HashId = pipe(
 );
 
 // Date type
-const IsoDate = pipe(string(), isoDate("The date is badly formatted."));
-const IsoTime = pipe(string(), isoTime("The time is badly formatted."));
+const IsoDate = pipe(string(), isoDate("The date is badly formatted."), trim());
+const IsoTime = pipe(string(), isoTime("The time is badly formatted."), trim());
 
 // Appointment modality
 const AppointmentModality = picklist(
   ["face-to-face", "online"],
-  "modality mst be one of the following options: face-to-face, or online"
+  "modality must be one of the following options: face-to-face, or online"
 );
 
 // Request schema
