@@ -2,11 +2,13 @@
 import { Resend } from "resend";
 import AppointmentCreated from "@/components/emails-templates/AppointmentCreated.tsx";
 
+/* Services */
+import registerAppointment from "../../services/registerAppointment.ts";
+import sendEmail from "../../services/sendEmail.ts";
+
 import { flatten, safeParse } from "valibot";
 import { appoinmentDataSchema } from "@/utils/appoinmentDataSchema";
-import InputError from "@/astro-components/UI/InputError.astro";
 import GoBack from "@/astro-components/UI/GoBack.astro";
-import AppointmentsForm from "./AppointmentsForm.astro";
 import Layout from "@/layouts/Layout.astro";
 import FormPatientSection from "@/sections/appointments/FormPatientSection.astro";
 import FormTutorSection from "@/sections/appointments/FormTutorSection.astro";
@@ -79,12 +81,9 @@ async function handlePostRequest() {
       relationshipWithThePatient: formData.relationshipWithThePatient,
     };
 
-    const appointmentDate = formData.date;
-    const appointmentTime = formData.time;
-
     const appointment = {
-      date: appointmentDate,
-      time: appointmentTime,
+      date: formData.date,
+      time: formData.time,
       professionalId: formData.professionalId,
       modality: formData.modality,
     };
@@ -107,33 +106,18 @@ async function handlePostRequest() {
       return;
     }
 
-    const response = await fetch(`${Astro.url.origin}/api/appointments`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(output),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      errors = { api: "Error al procesar la solicitud" };
-      console.error(data.message);
-      return;
+    const appointmentResult = await registerAppointment(
+      output,
+      Astro.url.origin
+    );
+    try {
+      await sendEmail(output);
+    } catch (emailError) {
+      console.error("Failed to send email:", emailError);
+      // TODO: Add email to pending stack
+      //await addToPendingEmails(appointmentResult.id, output);
     }
-    const { data: emailData, error } = await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: "complained@resend.dev",
-      subject: "¡Se agendó un turno exitosamente!",
-      react: AppointmentCreated(output),
-    });
-
-    if (error) {
-      return console.error({ error });
-    }
-
-    console.log({ emailData });
-    return Astro.redirect(`/appointments/${data.id}`);
+    return Astro.redirect(`/appointments/${appointmentResult.id}`);
   } catch (e) {
     if (e instanceof Error) {
       console.log(e.message);
