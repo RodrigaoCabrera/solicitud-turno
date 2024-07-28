@@ -1,4 +1,7 @@
 ---
+import { Resend } from "resend";
+import AppointmentCreated from "@/components/emails-templates/AppointmentCreated.tsx";
+
 import { flatten, safeParse } from "valibot";
 import { appoinmentDataSchema } from "@/utils/appoinmentDataSchema";
 import InputError from "@/astro-components/UI/InputError.astro";
@@ -32,6 +35,8 @@ let formData = {
 };
 
 async function handlePostRequest() {
+  const resend = new Resend(import.meta.env.RESEND_API_KEY);
+
   try {
     const form = await Astro.request.formData();
     formData = {
@@ -116,6 +121,18 @@ async function handlePostRequest() {
       console.error(data.message);
       return;
     }
+    const { data: emailData, error } = await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: "complained@resend.dev",
+      subject: "¡Se agendó un turno exitosamente!",
+      react: AppointmentCreated(output),
+    });
+
+    if (error) {
+      return console.error({ error });
+    }
+
+    console.log({ emailData });
     return Astro.redirect(`/appointments/${data.id}`);
   } catch (e) {
     if (e instanceof Error) {
