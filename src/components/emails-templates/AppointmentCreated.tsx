@@ -39,15 +39,17 @@ interface Appointment {
   modality: string;
 }
 interface EmailTemplateProps {
-  patient: Patient;
-  tutor: Tutor;
-  appointment: Appointment;
+  emailData: { patient: Patient; tutor: Tutor; appointment: Appointment };
+  calendarLink?: string;
 }
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "";
 
-const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = (output) => {
+const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
+  emailData,
+  calendarLink,
+}) => {
   const {
     patient: {
       firstName: patientName,
@@ -56,7 +58,7 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = (output) => {
     },
     tutor: { firstName, lastName },
     appointment: { date, time, modality },
-  } = output;
+  } = emailData;
 
   return (
     <Tailwind
@@ -201,6 +203,15 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = (output) => {
               <Column className="text-xs text-center leading-4 mx-auto">
                 En el caso de tener que abonar la consulta podrás gestionar el
                 pago directamente en el consultorio.
+              </Column>
+            </Row>
+            <Row className="max-w-[250px]">
+              <Column>
+                <Link className="text-black underline" href={calendarLink}>
+                  <Text className="text-xs text-center mx-auto">
+                    Agregar turno a google calendar
+                  </Text>
+                </Link>
               </Column>
             </Row>
 

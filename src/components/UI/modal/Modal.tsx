@@ -11,11 +11,18 @@ interface Appointmentdate {
   calendarTime: string;
   modality: string;
 }
+interface ProfessionalData {
+  id: string;
+  sessionTime: number;
+  address: string;
+  firstName: string;
+  lastName: string;
+}
+
 interface ModalProps extends HandleModal {
   dialogRef: React.RefObject<HTMLDialogElement>;
   value: Appointmentdate;
-  professionalId: string;
-  professionalAddress: string;
+  professionalData: ProfessionalData;
 }
 
 interface TriggerProps extends HandleModal {
@@ -27,15 +34,23 @@ export function Modal({
   dialogRef,
   handleModal,
   value,
-  professionalId,
-  professionalAddress,
+  professionalData,
 }: ModalProps) {
   const addToLocalStorage = () => {
     localStorage.setItem("storedDate", value.calendarDate);
     localStorage.setItem("storedTime", value.calendarTime);
     localStorage.setItem("modality", value.modality);
-    localStorage.setItem("professionalId", professionalId);
-    localStorage.setItem("professionalAddress", professionalAddress);
+
+    localStorage.setItem(
+      "professionalData",
+      JSON.stringify({
+        id: professionalData.id,
+        firstName: professionalData.firstName,
+        lastName: professionalData.lastName,
+        address: professionalData.address,
+        sessionTime: professionalData.sessionTime,
+      })
+    );
   };
 
   return (
@@ -58,7 +73,7 @@ export function Modal({
         </section>
 
         <main className="px-3">
-          <Card value={value} professionalAddress={professionalAddress} />
+          <Card value={value} professionalAddress={professionalData.address} />
         </main>
 
         <section className="flex flex-col items-center gap-1 mt-3">

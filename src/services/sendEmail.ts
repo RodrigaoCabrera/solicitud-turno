@@ -11,12 +11,12 @@ interface EmailData {
   appointment: Appointment;
 }
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
-const sendEmail = async (emailData: EmailData) => {
+const sendEmail = async (emailData: EmailData, calendarLink: string) => {
   const { data, error } = await resend.emails.send({
     from: "onboarding@resend.dev",
-    to: "rodrigok97k@gmail.com",
+    to: "rodrigod33d@gmail.com",
     subject: "¡Se agendó un turno exitosamente!",
-    react: AppointmentCreated(emailData),
+    react: AppointmentCreated({ emailData, calendarLink }),
   });
 
   if (error) {

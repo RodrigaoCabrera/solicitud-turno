@@ -11,6 +11,8 @@ async function getData() {
         db
           .select({
             id: ProfessionalProfile.id,
+            firstName: ProfessionalProfile.firstName,
+            lastName: ProfessionalProfile.lastName,
             sessionTime: ProfessionalProfile.sessionTime,
             address: ProfessionalProfile.address,
           })

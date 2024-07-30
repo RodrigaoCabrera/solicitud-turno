@@ -5,6 +5,7 @@ import AppointmentCreated from "@/components/emails-templates/AppointmentCreated
 /* Services */
 import registerAppointment from "../../services/registerAppointment.ts";
 import sendEmail from "../../services/sendEmail.ts";
+import generateGoogleCalendarLink from "../../services/generateGoogleCalendarLink.ts";
 
 import { flatten, safeParse } from "valibot";
 import { appoinmentDataSchema } from "@/utils/appoinmentDataSchema";
@@ -33,12 +34,14 @@ let formData = {
   date: "",
   time: "",
   professionalId: "",
+  professionalName: "",
+  professionalLastName: "",
+  professionalAddress: "",
+  professionalSessionTime: "",
   modality: "",
 };
 
 async function handlePostRequest() {
-  const resend = new Resend(import.meta.env.RESEND_API_KEY);
-
   try {
     const form = await Astro.request.formData();
     formData = {
@@ -59,6 +62,11 @@ async function handlePostRequest() {
       date: form.get("date")?.toString().replaceAll(/ /g, "") || "",
       time: form.get("time")?.toString().replaceAll(/ /g, "") || "",
       professionalId: form.get("professionalId")?.toString() || "",
+      professionalName: form.get("professionalName")?.toString() || "",
+      professionalLastName: form.get("professionalLastName")?.toString() || "",
+      professionalAddress: form.get("professionalAddress")?.toString() || "",
+      professionalSessionTime:
+        form.get("professionalSessionTime")?.toString() || "",
       modality: form.get("modality")?.toString() || "",
     };
 
@@ -94,6 +102,14 @@ async function handlePostRequest() {
       appointment,
     };
 
+    const professionalData = {
+      id: formData.professionalId,
+      firstName: formData.professionalName,
+      lastName: formData.professionalLastName,
+      address: formData.professionalAddress,
+      sessionTime: Number(formData.professionalSessionTime),
+    };
+
     // Validate appointment data
     const { success, output, issues } = safeParse(
       appoinmentDataSchema,
@@ -110,8 +126,15 @@ async function handlePostRequest() {
       output,
       Astro.url.origin
     );
+    // Generate google calendar link
+    const calendarLink = generateGoogleCalendarLink({
+      appointment: output.appointment,
+      professionalData,
+      guest: output.tutor.email,
+    });
+
     try {
-      await sendEmail(output);
+      await sendEmail(output, calendarLink);
     } catch (emailError) {
       console.error("Failed to send email:", emailError);
       // TODO: Add email to pending stack
@@ -144,7 +167,7 @@ if (Astro.request.method === "POST") {
       <FormTutorSection formData={formData} errors={errors} />
 
       <!-- Hidden appointment fields -->
-      <div class="hidden">
+      <div class="">
         <input
           type="text"
           id="professionalId"
@@ -159,8 +182,31 @@ if (Astro.request.method === "POST") {
           name="modality"
           value={formData.modality}
         />
+        <input
+          type="text"
+          id="professionalName"
+          name="professionalName"
+          value={formData.professionalName}
+        />
+        <input
+          type="text"
+          id="professionalLastName"
+          name="professionalLastName"
+          value={formData.professionalLastName}
+        />
+        <input
+          type="text"
+          id="professionalAddress"
+          name="professionalAddress"
+          value={formData.professionalAddress}
+        />
+        <input
+          type="text"
+          id="professionalSessionTime"
+          name="professionalSessionTime"
+          value={formData.professionalSessionTime}
+        />
       </div>
-
       <Button as="button" type="submit" class="w-full mt-3"
         ><Typography
           as="span"
@@ -172,47 +218,75 @@ if (Astro.request.method === "POST") {
         </Typography></Button
       >
     </form>
-
-    <script>
-      // Fuction to clear the error message
-      function clearError(inputId: string) {
-        const errorSpan = document.getElementById(inputId + "Error");
-
-        if (errorSpan) {
-          errorSpan.textContent = "";
-        }
-      }
-
-      // Add event listeners to the input fields
-      document.querySelectorAll("input, select").forEach((input) => {
-        input.addEventListener("input", () => clearError(input.id));
-      });
-
-      function addDateFromLocalStorage() {
-        const date = localStorage.getItem("storedDate");
-        const time = localStorage.getItem("storedTime");
-        const professionalId = localStorage.getItem("professionalId");
-        const modality = localStorage.getItem("modality");
-
-        const $dateInput = document.querySelector("#date") as HTMLInputElement;
-        const $timeInput = document.querySelector("#time") as HTMLInputElement;
-
-        const $professionalIdInput = document.querySelector(
-          "#professionalId"
-        ) as HTMLInputElement;
-
-        const $modalityInput = document.querySelector(
-          "#modality"
-        ) as HTMLInputElement;
-
-        if (date && time && professionalId && modality) {
-          $dateInput.value = date;
-          $timeInput.value = time;
-          $professionalIdInput.value = professionalId;
-          $modalityInput.value = modality;
-        }
-      }
-      addDateFromLocalStorage();
-    </script>
   </section>
 </Layout>
+
+<script>
+  // Fuction to clear the error message
+  function clearError(inputId: string) {
+    const errorSpan = document.getElementById(inputId + "Error");
+
+    if (errorSpan) {
+      errorSpan.textContent = "";
+    }
+  }
+
+  // Add event listeners to the input fields
+  document.querySelectorAll("input, select").forEach((input) => {
+    input.addEventListener("input", () => clearError(input.id));
+  });
+
+  function addDateFromLocalStorage() {
+    const date = localStorage.getItem("storedDate");
+    const time = localStorage.getItem("storedTime");
+    const modality = localStorage.getItem("modality");
+    const professionalData = JSON.parse(
+      localStorage.getItem("professionalData") || ""
+    );
+
+    const $dateInput = document.querySelector("#date") as HTMLInputElement;
+    const $timeInput = document.querySelector("#time") as HTMLInputElement;
+
+    const $professionalIdInput = document.querySelector(
+      "#professionalId"
+    ) as HTMLInputElement;
+
+    const $modalityInput = document.querySelector(
+      "#modality"
+    ) as HTMLInputElement;
+    const $professionalName = document.querySelector(
+      "#professionalName"
+    ) as HTMLInputElement;
+    const $professionalLastName = document.querySelector(
+      "#professionalLastName"
+    ) as HTMLInputElement;
+    const $professionalAddress = document.querySelector(
+      "#professionalAddress"
+    ) as HTMLInputElement;
+    const $professionalSessionTime = document.querySelector(
+      "#professionalSessionTime"
+    ) as HTMLInputElement;
+
+    if (
+      date &&
+      time &&
+      modality &&
+      professionalData.id &&
+      professionalData.firstName &&
+      professionalData.lastName &&
+      professionalData.address &&
+      professionalData.sessionTime
+    ) {
+      console.log({ professionalData });
+      $dateInput.value = date;
+      $timeInput.value = time;
+      $modalityInput.value = modality;
+      $professionalIdInput.value = professionalData.id;
+      $professionalName.value = professionalData.firstName;
+      $professionalLastName.value = professionalData.lastName;
+      $professionalAddress.value = professionalData.address;
+      $professionalSessionTime.value = professionalData.sessionTime;
+    }
+  }
+  addDateFromLocalStorage();
+</script>

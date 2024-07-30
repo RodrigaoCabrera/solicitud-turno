@@ -52,6 +52,8 @@ interface ProfessionalData {
   id: string;
   sessionTime: number;
   address: string;
+  firstName: string;
+  lastName: string;
 }
 
 function Picker({
@@ -288,8 +290,7 @@ function Cally({
         dialogRef={dialogRef}
         handleModal={handleModal}
         value={value}
-        professionalId={professionalData.id}
-        professionalAddress={professionalData.address}
+        professionalData={professionalData}
       />
       <ModalTrigger
         action="open"
