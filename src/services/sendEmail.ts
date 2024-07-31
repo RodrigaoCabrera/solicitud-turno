@@ -11,19 +11,23 @@ interface EmailData {
   appointment: Appointment;
 }
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
-const sendEmail = async (emailData: EmailData, calendarLink: string) => {
-  const { data, error } = await resend.emails.send({
-    from: "onboarding@resend.dev",
-    to: "rodrigod33d@gmail.com",
-    subject: "¡Se agendó un turno exitosamente!",
-    react: AppointmentCreated({ emailData, calendarLink }),
-  });
+const sendEmail = (emailData: EmailData, calendarLink: string) => {
+  const promises = [
+    resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: "rodrigod33d@gmail.com",
+      subject: "¡Se agendó un turno exitosamente!",
+      react: AppointmentCreated({ emailData }),
+    }),
+    resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: "rodrigod33d@gmail.com",
+      subject: "Nuevo turno agendado",
+      react: AppointmentCreated({ emailData, calendarLink }),
+    }),
+  ];
 
-  if (error) {
-    throw new Error("Failed to send email");
-  }
-
-  return data;
+  //TODO: handle of errors
+  return Promise.allSettled(promises).then((results) => results);
 };
-
 export default sendEmail;

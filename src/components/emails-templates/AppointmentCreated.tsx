@@ -205,15 +205,17 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
                 pago directamente en el consultorio.
               </Column>
             </Row>
-            <Row className="max-w-[250px]">
-              <Column>
-                <Link className="text-black underline" href={calendarLink}>
-                  <Text className="text-xs text-center mx-auto">
-                    Agregar turno a google calendar
-                  </Text>
-                </Link>
-              </Column>
-            </Row>
+            {calendarLink && (
+              <Row className="max-w-[250px]">
+                <Column>
+                  <Link className="text-black underline" href={calendarLink}>
+                    <Text className="text-xs text-center mx-auto">
+                      Agregar turno a google calendar
+                    </Text>
+                  </Link>
+                </Column>
+              </Row>
+            )}
 
             <Row className="max-w-[250px]">
               <Column>
