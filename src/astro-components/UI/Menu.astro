@@ -3,6 +3,25 @@ import Close from "../icons/Close.astro";
 import Hamburger from "../icons/Hamburger.astro";
 import Button from "./Button.astro";
 import Typography from "./Typography.astro";
+
+const menuItems = [
+  {
+    label: "Sobre mí",
+    href: "/#aboutMe",
+  },
+  {
+    label: "Cómo llegar a mi consultorio",
+    href: "/#howToArrive",
+  },
+  {
+    label: "Contacto",
+    href: "/#contacto",
+  },
+  {
+    label: "Cancelar turno",
+    href: "/cancelar-turno",
+  },
+];
 ---
 
 <section class="menuContainer flex align-middle">
@@ -46,24 +65,15 @@ import Typography from "./Typography.astro";
     </div>
 
     <ul>
-      <li class="mb-2 px-2 hover:bg-gray-100">
-        <a href="/#aboutMe" class="py-1 inline-block w-full text-sm">Sobre mí</a
-        >
-      </li>
-      <li class="mb-2 px-2 hover:bg-gray-100">
-        <a href="/#howToArrive" class="py-1 inline-block w-full text-sm"
-          >Cómo llegar a mi consultorio</a
-        >
-      </li>
-      <li class="mb-2 px-2 hover:bg-gray-100">
-        <a href="/#contact" class="py-1 inline-block w-full text-sm">Contacto</a
-        >
-      </li>
-      <li class="px-2 hover:bg-gray-100">
-        <a href="/cancelar-turno" class="py-1 inline-block w-full text-sm"
-          >Cancelar turno</a
-        >
-      </li>
+      {
+        menuItems.map((item) => (
+          <li class="mb-2 px-2 hover:bg-gray-100">
+            <a href={item.href} class="py-1 inline-block w-full text-sm">
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
     </ul>
   </aside>
 </section>
