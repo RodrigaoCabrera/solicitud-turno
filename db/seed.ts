@@ -27,7 +27,7 @@ export default async function () {
       endTimeAM: "11:00",
       startTimePM: "15:00",
       endTimePM: "16:00",
-      sessionAmount: 3,
+      sessionAmount: 6,
       professionalId:
         "22a3c85609d4d626bc01cd87df71d01f6bb9a62efce214d37b0d4faf4f3ebb74",
     },

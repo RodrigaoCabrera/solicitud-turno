@@ -131,7 +131,7 @@ const TimeSlotSelector: React.FC<Props> = ({
           <div className="flex-1">
             <label
               htmlFor="AM"
-              className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 select-none ${
+              className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 select-none cursor-pointer ${
                 timeZone === "AM" && "bg-[#94A3B8]"
               }`}
             >
@@ -154,7 +154,7 @@ const TimeSlotSelector: React.FC<Props> = ({
           <div className="flex-1">
             <label
               htmlFor="PM"
-              className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 select-none ${
+              className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 select-none cursor-pointer ${
                 timeZone === "PM" && "bg-[#94A3B8]"
               }`}
             >
@@ -193,7 +193,7 @@ const TimeSlotSelector: React.FC<Props> = ({
               />
               <label
                 htmlFor={slot.time}
-                className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 border-[1px] border-solid boder-[#94A3B8] pt-2 px-2 pb-1 select-none ${
+                className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 border-[1px] border-solid boder-[#94A3B8] pt-2 px-2 pb-1 select-none cursor-pointer ${
                   slot.time === value.calendarTime &&
                   "bg-[#D9D9D9] font-semibold"
                 } ${slot.existAppointment && "text-[#94A3B8]"}`}
