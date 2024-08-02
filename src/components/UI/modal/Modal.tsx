@@ -60,7 +60,7 @@ export function Modal({
       ref={dialogRef}
       onClick={() => handleModal("close")}
     >
-      <div className="absolute right-3 top-3">
+      <div className="absolute right-3 top-3 cursor-pointer">
         <CloseIcon width="16" height="16" viewBox="0 0 16 16" fill="none" />
       </div>
 

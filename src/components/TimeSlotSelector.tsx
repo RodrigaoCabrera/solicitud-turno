@@ -125,12 +125,13 @@ const TimeSlotSelector: React.FC<Props> = ({
   return (
     <section>
       <p className="text-sm text-[#222B45] mb-1">Horarios disponibles</p>
-      <div className="time-slot-container">
+      <section className="time-slot-container">
+        {/* Tabs item */}
         <div className="flex justify-center align-middle w-100 max-w-[196px] mx-auto border-[1px] border-solid boder-[##94A3B8] rounded-full">
           <div className="flex-1">
             <label
               htmlFor="AM"
-              className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 ${
+              className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 select-none ${
                 timeZone === "AM" && "bg-[#94A3B8]"
               }`}
             >
@@ -153,7 +154,7 @@ const TimeSlotSelector: React.FC<Props> = ({
           <div className="flex-1">
             <label
               htmlFor="PM"
-              className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 ${
+              className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 select-none ${
                 timeZone === "PM" && "bg-[#94A3B8]"
               }`}
             >
@@ -176,7 +177,8 @@ const TimeSlotSelector: React.FC<Props> = ({
           </div>
         </div>
 
-        <section className="flex justify-center gap-3 flex-wrap w-100 mx-auto mt-3">
+        {/* Tabs items */}
+        <div className="flex justify-center gap-3 flex-wrap w-100 mx-auto mt-3">
           {slots.map((slot) => (
             <div className="radio-input flex-1 max-w-[78px]" key={slot.time}>
               <input
@@ -191,17 +193,17 @@ const TimeSlotSelector: React.FC<Props> = ({
               />
               <label
                 htmlFor={slot.time}
-                className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 border-[1px] border-solid boder-[#94A3B8] pt-2 px-2 pb-1 ${
+                className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 border-[1px] border-solid boder-[#94A3B8] pt-2 px-2 pb-1 select-none ${
                   slot.time === value.calendarTime &&
                   "bg-[#D9D9D9] font-semibold"
-                }`}
+                } ${slot.existAppointment && "text-[#94A3B8]"}`}
               >
                 <span>{slot.time}h</span>
               </label>
             </div>
           ))}
-        </section>
-      </div>
+        </div>
+      </section>
     </section>
   );
 };

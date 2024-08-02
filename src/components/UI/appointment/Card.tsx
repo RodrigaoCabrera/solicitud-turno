@@ -54,8 +54,9 @@ const Card: React.FC<Props> = ({ value, professionalAddress }) => {
           <Office width="16" height="16" viewBox="0 0 16 16" fill="none" />
         </span>
         <span className="text-xs capitalize">
-          {modality === "face-to-face" ? "Presencial" : modality} - Consultorio:{" "}
-          {professionalAddress}
+          {modality === "face-to-face"
+            ? "Presencial - Consultorio" + { professionalAddress }
+            : "Online - vìa google meet"}
         </span>
       </li>
     </ul>
