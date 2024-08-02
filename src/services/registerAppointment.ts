@@ -5,13 +5,13 @@ interface AppointmentData {
   appointment: Appointment;
 }
 interface AppointmentResponse {
-  id?: string | number;
+  id: string | number;
   message: string;
 }
 const registerAppointment = async (
   appointmentData: AppointmentData,
   url: string
-): Promise<AppointmentResponse> => {
+): Promise<AppointmentResponse | { error: string }> => {
   const response = await fetch(`${url}/api/appointments`, {
     method: "POST",
     headers: {
@@ -21,7 +21,8 @@ const registerAppointment = async (
   });
 
   if (!response.ok) {
-    throw new Error("Failed to register appointment");
+    const errorData = await response.json();
+    return { error: errorData.message || "Failed to register appointment" };
   }
 
   return await response.json();

@@ -23,10 +23,6 @@ const Card: React.FC<Props> = ({ value, professionalAddress }) => {
     return <p>No hay una fecha seleccionada</p>;
   }
 
-  if (!professionalAddress) {
-    professionalAddress = localStorage.getItem("professionalAddress") || "";
-  }
-
   const appointmentDate = format(selectedDate, "full");
 
   const appointmentTime = format(selectedDate, "HH:mm");
@@ -55,7 +51,7 @@ const Card: React.FC<Props> = ({ value, professionalAddress }) => {
         </span>
         <span className="text-xs capitalize">
           {modality === "face-to-face"
-            ? "Presencial - Consultorio" + { professionalAddress }
+            ? `Presencial - Consultorio ${professionalAddress}`
             : "Online - vìa google meet"}
         </span>
       </li>
