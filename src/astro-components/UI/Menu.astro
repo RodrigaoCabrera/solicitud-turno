@@ -20,10 +20,10 @@ import Typography from "./Typography.astro";
   <div id="menuBackdrop" class="fixed inset-0 bg-black opacity-50 z-40 hidden">
   </div>
   <aside
-    class="max-w-60 fixed inset-0 bg-white -translate-x-full transition z-50 p-2"
+    class="max-w-60 fixed inset-0 bg-white -translate-x-full transition z-50 py-2"
     id="menuDrawerContainer"
   >
-    <div class="flex justify-end">
+    <div class="flex justify-end pr-2">
       <button id="closeMenu">
         <span class="pointer-events-none">
           <Close
@@ -37,7 +37,7 @@ import Typography from "./Typography.astro";
       </button>
     </div>
 
-    <div class="py-3">
+    <div class="py-3 px-2">
       <Button as="a" href="/calendar" class="flex justify-center uppercase">
         <Typography as="span" variant="sm" color="black" class="font-semibold">
           Agendar turno
@@ -46,20 +46,20 @@ import Typography from "./Typography.astro";
     </div>
 
     <ul>
-      <li class="mb-2 hover:bg-gray-100">
+      <li class="mb-2 px-2 hover:bg-gray-100">
         <a href="/#aboutMe" class="py-1 inline-block w-full text-sm">Sobre mí</a
         >
       </li>
-      <li class="mb-2 hover:bg-gray-100">
+      <li class="mb-2 px-2 hover:bg-gray-100">
         <a href="/#howToArrive" class="py-1 inline-block w-full text-sm"
           >Cómo llegar a mi consultorio</a
         >
       </li>
-      <li class="mb-2 hover:bg-gray-100">
+      <li class="mb-2 px-2 hover:bg-gray-100">
         <a href="/#contact" class="py-1 inline-block w-full text-sm">Contacto</a
         >
       </li>
-      <li class="hover:bg-gray-100">
+      <li class="px-2 hover:bg-gray-100">
         <a href="/cancelar-turno" class="py-1 inline-block w-full text-sm"
           >Cancelar turno</a
         >
