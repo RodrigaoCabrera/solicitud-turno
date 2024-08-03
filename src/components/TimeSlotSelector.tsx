@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { date, format, isEqual } from "@formkit/tempo";
+import { date, format, isBefore, isEqual } from "@formkit/tempo";
 import AM from "./icons/AM";
 import AMTimeSelectorIcon from "./icons/AMTimeSelectorIcon";
 import PMTimeSelectorIcon from "./icons/PMTimeSelector";
@@ -40,7 +40,7 @@ interface Props {
 }
 interface Slots {
   time: string;
-  existAppointment: boolean;
+  isDisabled: boolean;
 }
 const TimeSlotSelector: React.FC<Props> = ({
   availability,
@@ -100,9 +100,16 @@ const TimeSlotSelector: React.FC<Props> = ({
 
         return isEqual(appointmentDate, currentDate);
       });
+
+      // Verify current time, and to disable completed hours
+      const currentTime = Date.now();
+      const IshoursBeforeToCurrent = isBefore(
+        format(startDate, "YYYY-MM-DD HH:mm:ss"),
+        format(new Date(currentTime), "YYYY-MM-DD HH:mm:ss")
+      );
       newSlots.push({
         time: format(current, "HH:mm"),
-        existAppointment,
+        isDisabled: existAppointment || IshoursBeforeToCurrent,
       });
       current = new Date(current.getTime() + interval);
     }
@@ -121,7 +128,6 @@ const TimeSlotSelector: React.FC<Props> = ({
   const handletimeZoneChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTimeZone(e.target.id as "AM" | "PM");
   };
-
   return (
     <section>
       <p className="text-sm text-[#222B45] mb-1">Horarios disponibles</p>
@@ -189,14 +195,14 @@ const TimeSlotSelector: React.FC<Props> = ({
                 value={slot.time}
                 onChange={onChange}
                 defaultChecked={slot.time === value.calendarTime}
-                disabled={slot.existAppointment}
+                disabled={slot.isDisabled}
               />
               <label
                 htmlFor={slot.time}
                 className={`flex gap-1 items-center justify-center rounded-full text-center text-xs h-100 border-[1px] border-solid boder-[#94A3B8] pt-2 px-2 pb-1 select-none cursor-pointer ${
                   slot.time === value.calendarTime &&
                   "bg-[#D9D9D9] font-semibold"
-                } ${slot.existAppointment && "text-[#94A3B8]"}`}
+                } ${slot.isDisabled && "text-[#94A3B8]"}`}
               >
                 <span>{slot.time}h</span>
               </label>
