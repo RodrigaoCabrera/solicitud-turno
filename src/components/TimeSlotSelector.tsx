@@ -102,7 +102,7 @@ const TimeSlotSelector: React.FC<Props> = ({
       });
 
       // Verify current time, and to disable completed hours
-      const currentTime = Date.now();
+      const currentTime = Date.now() - 30 * 60 * 1000;
       const IshoursBeforeToCurrent = isBefore(
         format(startDate, "YYYY-MM-DD HH:mm:ss"),
         format(new Date(currentTime), "YYYY-MM-DD HH:mm:ss")
