@@ -97,11 +97,6 @@ function Picker({
       return false;
     }
 
-    const session = availability.filter(
-      (availabilityData: Availability) =>
-        availabilityData.dayOfWeek === date.getUTCDay()
-    );
-
     for (let i = 0; i <= availability.length; i++) {
       const availabilityObj = availability[i];
       if (availabilityObj.dayOfWeek === date.getUTCDay()) {
