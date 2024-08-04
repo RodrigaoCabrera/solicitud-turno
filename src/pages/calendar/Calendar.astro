@@ -1,8 +1,10 @@
 ---
+import { db } from "db/db";
+import { ProfessionalProfile, Availability, Appointments } from "db/schema";
 import Cally from "../../components/Cally.tsx";
-
-import { db, ProfessionalProfile, Availability, Appointments } from "astro:db";
-
+import { AvailabilityType } from "../../types/availability.ts";
+import { AppointmentsType } from "@/types/appointments";
+import { ProfessionalData } from "@/types/professionalData";
 async function getData() {
   // Obtener los datos de disponibilidad
   try {
@@ -22,16 +24,22 @@ async function getData() {
       ]);
 
     return {
-      professionalData: professionalResponse[0],
-      availability: availabilityResponse,
-      appointments: appointmentsResponse,
+      professionalData: professionalResponse[0] as ProfessionalData,
+      availability: availabilityResponse as AvailabilityType[],
+      appointments: appointmentsResponse as AppointmentsType[],
     };
   } catch (error) {
     console.error("Error fetching data:", error);
-    return { professionalData: null, availability: null, appointments: null };
+    return;
   }
 }
-const { professionalData, availability, appointments } = await getData();
+const data = await getData();
+
+if (!data) {
+  return;
+}
+
+const { professionalData, availability, appointments } = data;
 ---
 
 <>

@@ -1,8 +1,8 @@
 ---
 import Item from "@/astro-components/UI/Item.astro";
 import Typography from "@/astro-components/UI/Typography.astro";
-import { Availability } from "astro:db";
-import { db } from "astro:db";
+import { Availability } from "db/schema";
+import { db } from "db/db";
 
 interface OpenHours {
   days: number[];
@@ -24,6 +24,7 @@ for (let el of availability) {
   );
 
   if (!existOpenHours) {
+    if (!el.dayOfWeek) return;
     openHours.push({
       days: [el.dayOfWeek],
       am,
@@ -32,7 +33,9 @@ for (let el of availability) {
     continue;
   }
 
-  existOpenHours.days = [...existOpenHours.days, el.dayOfWeek];
+  if (!existOpenHours.days && !el.dayOfWeek) {
+    existOpenHours.days = [/* ...existOpenHours.days, el.dayOfWeek */ 0];
+  }
 }
 
 // Get day

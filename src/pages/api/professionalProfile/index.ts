@@ -17,9 +17,11 @@ import {
   minLength,
   maxLength,
 } from "valibot";
-import { db, eq, ProfessionalProfile, Availability, or } from "astro:db";
+import { ProfessionalProfile, Availability } from "db/schema.ts";
 
 import { APIRoute } from "astro";
+import { db } from "db/db.ts";
+import { eq, or } from "drizzle-orm";
 
 const ProfessionalEmail = pipe(
   string("The email must be a valid email address"),

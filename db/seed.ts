@@ -1,7 +1,8 @@
-import { db, ProfessionalProfile, Availability } from "astro:db";
+import { db } from "./db";
+import { ProfessionalProfile, Availability } from "./schema";
 
-export default async function () {
-  // Professional data
+async function seed() {
+  // Datos de profesionales
   await db.insert(ProfessionalProfile).values([
     {
       id: "22a3c85609d4d626bc01cd87df71d01f6bb9a62efce214d37b0d4faf4f3ebb74",
@@ -13,12 +14,12 @@ export default async function () {
       profession: "Médica Pediatra",
       aboutMe:
         "Dr. Bellamy Nicholas is a top specialist at London Bridge Hospital at London. He has achieved several awards and recognition for is contribution and service in his own field. He is available for private consultation.",
-      address: "Irastorza 910 (3460) Curuzú Cuatiá, Corrientes  ",
+      address: "Irastorza 910 (3460) Curuzú Cuatiá, Corrientes",
       sessionTime: 30,
     },
   ]);
 
-  // Professional availability data
+  // Datos de disponibilidad profesional
   await db.insert(Availability).values([
     {
       id: 1,
@@ -76,4 +77,10 @@ export default async function () {
         "22a3c85609d4d626bc01cd87df71d01f6bb9a62efce214d37b0d4faf4f3ebb74",
     },
   ]);
+
+  console.log("Datos de seed insertados correctamente");
 }
+
+seed().catch((err) => {
+  console.error("Error insertando datos de seed:", err);
+});

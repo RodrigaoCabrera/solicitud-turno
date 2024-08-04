@@ -2,14 +2,14 @@ import { createHash } from "node:crypto";
 
 import type { APIRoute } from "astro";
 import {
-  db,
-  eq,
   Tutors,
   Patients,
   Appointments,
   Availability,
   ProfessionalProfile,
-} from "astro:db";
+} from "../../../../db/schema.ts";
+import { db } from "../../../../db/db.ts";
+import { eq } from "drizzle-orm";
 import { date } from "@formkit/tempo";
 import { safeParse } from "valibot";
 

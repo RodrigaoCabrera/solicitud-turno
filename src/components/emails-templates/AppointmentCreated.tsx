@@ -41,6 +41,7 @@ interface Appointment {
 interface EmailTemplateProps {
   emailData: { patient: Patient; tutor: Tutor; appointment: Appointment };
   calendarLink?: string;
+  isEmailForProfessional: boolean;
 }
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -49,6 +50,7 @@ const baseUrl = process.env.VERCEL_URL
 const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
   emailData,
   calendarLink,
+  isEmailForProfessional,
 }) => {
   const {
     patient: {
@@ -114,7 +116,9 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
               <Row>
                 <Column>
                   <Text className="text-m font-medium mb-2 max-w-[220px] text-center leading-4 mx-auto">
-                    Ya agendaste tu turno con la Dra. Carolina Fagalde.
+                    {isEmailForProfessional
+                      ? "Se creó un nuevo turno"
+                      : "Ya agendaste tu turno con la Dra. Carolina Fagalde."}
                   </Text>
                 </Column>
               </Row>

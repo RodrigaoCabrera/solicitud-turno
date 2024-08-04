@@ -4,18 +4,14 @@ import Check from "@/astro-components/icons/Check.astro";
 import Office from "@/astro-components/icons/Office.astro";
 import HealthInsurance from "@/astro-components/icons/HealthInsurance.astro";
 import Typography from "@/astro-components/UI/Typography.astro";
-import {
-  db,
-  eq,
-  Patients,
-  Tutors,
-  Appointments,
-  ProfessionalProfile,
-} from "astro:db";
+
 import { format } from "@formkit/tempo";
 import CalendarIcon from "@/astro-components/icons/CalendarIcon.astro";
 import Clock from "@/astro-components/icons/Clock.astro";
 import Button from "@/astro-components/UI/Button.astro";
+import { Appointments, Patients, Tutors, ProfessionalProfile } from "db/schema";
+import { db } from "db/db";
+import { eq } from "drizzle-orm";
 interface Props {
   id: string;
 }
@@ -59,7 +55,7 @@ const {
   address,
 } = appointment[0];
 
-const appointmentDate = format(date, "full", "es");
+const appointmentDate = format(date || "", "full", "es");
 ---
 
 <Layout title="Turno agendado">

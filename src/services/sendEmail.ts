@@ -17,13 +17,17 @@ const sendEmail = (emailData: EmailData, calendarLink: string) => {
       from: "onboarding@resend.dev",
       to: "rodrigod33d@gmail.com",
       subject: "¡Se agendó un turno exitosamente!",
-      react: AppointmentCreated({ emailData }),
+      react: AppointmentCreated({ emailData, isEmailForProfessional: false }),
     }),
     resend.emails.send({
       from: "onboarding@resend.dev",
       to: "rodrigod33d@gmail.com",
       subject: "Nuevo turno agendado",
-      react: AppointmentCreated({ emailData, calendarLink }),
+      react: AppointmentCreated({
+        emailData,
+        calendarLink,
+        isEmailForProfessional: true,
+      }),
     }),
   ];
 
