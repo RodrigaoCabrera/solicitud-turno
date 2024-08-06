@@ -43,9 +43,7 @@ interface EmailTemplateProps {
   calendarLink?: string;
   isEmailForProfessional: boolean;
 }
-const baseUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "";
+const baseUrl = import.meta.env.BASE_URL || "";
 
 const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
   emailData,
@@ -96,7 +94,7 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
               <Row>
                 <Column>
                   <Img
-                    src={`${baseUrl}/static/check-verified.png`}
+                    src={`${baseUrl}/check-verified.png`}
                     width="63"
                     height="63"
                     alt="Check verified"
@@ -126,7 +124,7 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
               <Row>
                 <Column className="inline-block mr-3 pt-1">
                   <Img
-                    src={`${baseUrl}/static/calendar.png`}
+                    src={`${baseUrl}/calendar.png`}
                     width="15"
                     height="15"
                     alt="Icono de calendario"
@@ -138,7 +136,7 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
               <Row className="mt-2">
                 <Column className="inline-block mr-3 pt-1">
                   <Img
-                    src={`${baseUrl}/static/clock.png`}
+                    src={`${baseUrl}/clock.png`}
                     width="15"
                     height="15"
                     alt="Icono de calendario"
@@ -150,7 +148,7 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
               <Row className="mt-2">
                 <Column className="inline-block mr-3 pt-1">
                   <Img
-                    src={`${baseUrl}/static/office.png`}
+                    src={`${baseUrl}/office.png`}
                     width="15"
                     height="15"
                     alt="Icono de calendario"
@@ -159,14 +157,14 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
                 </Column>
                 <Column className="inline-block text-sm">
                   {modality === "online"
-                    ? "Online"
+                    ? "Online - Vía Google meet"
                     : `Presencial - Consultorio: direccion`}
                 </Column>
               </Row>
               <Row className="mt-2">
                 <Column className="inline-block mr-3 pt-1">
                   <Img
-                    src={`${baseUrl}/static/medical-cross.png`}
+                    src={`${baseUrl}/medical-cross.png`}
                     width="15"
                     height="15"
                     alt="Icono de calendario"
