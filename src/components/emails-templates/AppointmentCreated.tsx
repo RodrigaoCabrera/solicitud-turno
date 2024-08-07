@@ -14,52 +14,30 @@ import {
 import * as React from "react";
 import defaultTheme from "tailwindcss/defaultTheme";
 
-interface Patient {
-  firstName: string;
-  lastName: string;
-  dni: string;
-  age: number;
-  gender: string;
-  type: string;
-  healthInsurance: string;
-}
-
-interface Tutor {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  dni: string;
-  relationshipWithThePatient: string;
-}
-interface Appointment {
+interface EmailData {
   date: string;
   time: string;
-  professionalId: string;
   modality: string;
+  patientName: string;
+  patientLastName: string;
+  healthInsurance: string;
+  tutorName: string;
+  tutorLastName: string;
+  email: string;
+  address: string;
 }
 interface EmailTemplateProps {
-  emailData: { patient: Patient; tutor: Tutor; appointment: Appointment };
+  appointmentData: EmailData;
   calendarLink?: string;
   isEmailForProfessional: boolean;
 }
 const baseUrl = import.meta.env.BASE_URL || "";
 
 const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
-  emailData,
+  appointmentData,
   calendarLink,
   isEmailForProfessional,
 }) => {
-  const {
-    patient: {
-      firstName: patientName,
-      lastName: patientLastName,
-      healthInsurance,
-    },
-    tutor: { firstName, lastName },
-    appointment: { date, time, modality },
-  } = emailData;
-
   return (
     <Tailwind
       config={{
@@ -131,7 +109,9 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
                     className="inline-block"
                   />
                 </Column>
-                <Column className="inline-block text-sm">{date}</Column>
+                <Column className="inline-block text-sm">
+                  {appointmentData.date}
+                </Column>
               </Row>
               <Row className="mt-2">
                 <Column className="inline-block mr-3 pt-1">
@@ -143,7 +123,9 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
                     className="inline-block"
                   />
                 </Column>
-                <Column className="inline-block text-sm">{time}</Column>
+                <Column className="inline-block text-sm">
+                  {appointmentData.time}
+                </Column>
               </Row>
               <Row className="mt-2">
                 <Column className="inline-block mr-3 pt-1">
@@ -156,7 +138,7 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
                   />
                 </Column>
                 <Column className="inline-block text-sm">
-                  {modality === "online"
+                  {appointmentData.modality === "online"
                     ? "Online - Vía Google meet"
                     : `Presencial - Consultorio: direccion`}
                 </Column>
@@ -172,7 +154,7 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
                   />
                 </Column>
                 <Column className="inline-block text-sm">
-                  {healthInsurance}
+                  {appointmentData.healthInsurance}
                 </Column>
               </Row>
 
@@ -180,16 +162,22 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
                 <Column>
                   <span className="text-sm inline-block mr-1">Paciente:</span>
                   <span className="text-sm inline-block mr-1">
-                    {patientName}
+                    {appointmentData.patientName}
                   </span>
-                  <span className="text-sm">{patientLastName}</span>
+                  <span className="text-sm">
+                    {appointmentData.patientLastName}
+                  </span>
                 </Column>
               </Row>
               <Row>
                 <Column className="mt-1">
                   <span className="text-sm inline-block mr-1">Tutor:</span>
-                  <span className="text-sm inline-block mr-1">{firstName}</span>
-                  <span className="text-sm">{lastName}</span>
+                  <span className="text-sm inline-block mr-1">
+                    {appointmentData.tutorName}
+                  </span>
+                  <span className="text-sm">
+                    {appointmentData.tutorLastName}
+                  </span>
                 </Column>
               </Row>
             </Container>

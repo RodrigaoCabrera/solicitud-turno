@@ -19,29 +19,51 @@ const { id } = Astro.params;
 
 if (!id) return Astro.redirect("/404");
 
-// Get appointment info
-const appointment = await db
-  .select({
-    date: Appointments.date,
-    time: Appointments.time,
-    modality: Appointments.modality,
-    patientName: Patients.firstName,
-    patientLastName: Patients.lastName,
-    healthInsurance: Patients.healthInsurance,
-    tutorName: Tutors.firstName,
-    tutorLastName: Tutors.lastName,
-    address: ProfessionalProfile.address,
-  })
-  .from(Appointments)
-  .where(eq(Appointments.id, id))
-  .innerJoin(Patients, eq(Appointments.patientId, Patients.id))
-  .innerJoin(Tutors, eq(Patients.tutorId, Tutors.id))
-  .innerJoin(
-    ProfessionalProfile,
-    eq(Appointments.professionalId, ProfessionalProfile.id)
-  );
+// En el componente de la página de destino
+const appointmentDataCookie = Astro.cookies.get("appointmentDataCookie");
+let appoinmentData;
+console.log({ appointmentDataCookie });
+if (appointmentDataCookie) {
+  try {
+    appoinmentData = JSON.parse(
+      decodeURIComponent(appointmentDataCookie.value)
+    );
 
-if (appointment.length <= 0) return Astro.redirect("/404");
+    console.log(appoinmentData);
+
+    // Elimina la cookie después de usarla
+    Astro.cookies.delete("appointmentappoinmentData");
+  } catch (error) {
+    console.error("Error al parsear los datos de la cookie:", error);
+  }
+}
+
+if (!appoinmentData) {
+  // Get appointment info
+  appoinmentData = await db
+    .select({
+      date: Appointments.date,
+      time: Appointments.time,
+      modality: Appointments.modality,
+      patientName: Patients.firstName,
+      patientLastName: Patients.lastName,
+      healthInsurance: Patients.healthInsurance,
+      tutorName: Tutors.firstName,
+      tutorLastName: Tutors.lastName,
+      address: ProfessionalProfile.address,
+    })
+    .from(Appointments)
+    .where(eq(Appointments.id, id))
+    .innerJoin(Patients, eq(Appointments.patientId, Patients.id))
+    .innerJoin(Tutors, eq(Patients.tutorId, Tutors.id))
+    .innerJoin(
+      ProfessionalProfile,
+      eq(Appointments.professionalId, ProfessionalProfile.id)
+    );
+
+  if (appoinmentData.length <= 0) return Astro.redirect("/404");
+  appoinmentData = appoinmentData[0];
+}
 
 const {
   date,
@@ -53,7 +75,7 @@ const {
   tutorName,
   tutorLastName,
   address,
-} = appointment[0];
+} = appoinmentData;
 
 const appointmentDate = format(date || "", "full", "es");
 ---

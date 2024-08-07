@@ -1,7 +1,7 @@
 ---
 import { Resend } from "resend";
 import AppointmentCreated from "@/components/emails-templates/AppointmentCreated.tsx";
-
+import { serialize } from "cookie";
 /* Services */
 import registerAppointment from "../../services/registerAppointment.ts";
 import sendEmail from "../../services/sendEmail.ts";
@@ -132,6 +132,33 @@ async function handlePostRequest() {
       return;
     }
 
+    // Store th appoinment data in cookie
+    const appointmentData = {
+      date: output.appointment.date,
+      time: output.appointment.time,
+      modality: output.appointment.modality,
+      patientName: output.patient.firstName,
+      patientLastName: output.patient.lastName,
+      healthInsurance: output.patient.healthInsurance,
+      tutorName: output.tutor.firstName,
+      tutorLastName: output.tutor.lastName,
+      email: output.tutor.email,
+      address: formData.professionalAddress,
+    };
+
+    const serializedData = encodeURIComponent(JSON.stringify(appointmentData));
+
+    // Create the cookie
+    const cookieOptions = {
+      httpOnly: true,
+      maxAge: 60 * 5,
+      path: "/",
+      sameSite: "strict" as const,
+      secure: import.meta.env.PROD,
+    };
+
+    Astro.cookies.set("appointmentDataCookie", serializedData, cookieOptions);
+
     // Generate google calendar link
     const calendarLink = generateGoogleCalendarLink({
       appointment: output.appointment,
@@ -140,7 +167,7 @@ async function handlePostRequest() {
     });
 
     try {
-      await sendEmail(output, calendarLink);
+      await sendEmail(appointmentData, calendarLink);
     } catch (emailError) {
       console.error("Failed to send email:", emailError);
       // TODO: Add email to pending stack
