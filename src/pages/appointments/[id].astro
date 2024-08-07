@@ -22,14 +22,11 @@ if (!id) return Astro.redirect("/404");
 // En el componente de la página de destino
 const appointmentDataCookie = Astro.cookies.get("appointmentDataCookie");
 let appoinmentData;
-console.log({ appointmentDataCookie });
 if (appointmentDataCookie) {
   try {
     appoinmentData = JSON.parse(
       decodeURIComponent(appointmentDataCookie.value)
     );
-
-    console.log(appoinmentData);
 
     // Elimina la cookie después de usarla
     Astro.cookies.delete("appointmentappoinmentData");
