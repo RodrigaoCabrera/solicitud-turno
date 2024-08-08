@@ -6,3 +6,15 @@ export interface AppointmentsType {
   professionalId: string;
   patientId: string;
 }
+export interface EmailData {
+  date: string;
+  time: string;
+  modality: string;
+  patientName: string;
+  patientLastName: string;
+  healthInsurance: string;
+  tutorName: string;
+  tutorLastName: string;
+  email: string;
+  address: string;
+}

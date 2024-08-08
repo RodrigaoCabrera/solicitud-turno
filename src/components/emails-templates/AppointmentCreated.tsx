@@ -14,18 +14,8 @@ import {
 import * as React from "react";
 import defaultTheme from "tailwindcss/defaultTheme";
 
-interface EmailData {
-  date: string;
-  time: string;
-  modality: string;
-  patientName: string;
-  patientLastName: string;
-  healthInsurance: string;
-  tutorName: string;
-  tutorLastName: string;
-  email: string;
-  address: string;
-}
+import { EmailData } from "@/types/appointments";
+
 interface EmailTemplateProps {
   appointmentData: EmailData;
   calendarLink?: string;
