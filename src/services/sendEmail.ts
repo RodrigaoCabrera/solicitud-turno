@@ -1,10 +1,5 @@
 import { Resend } from "resend";
 import AppointmentCreated from "@/components/emails-templates/AppointmentCreated";
-import {
-  Patient,
-  Tutor,
-  Appointment,
-} from "../../src/types/appoinmentsData.ts";
 interface EmailData {
   date: string;
   time: string;
