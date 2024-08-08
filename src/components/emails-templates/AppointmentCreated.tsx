@@ -140,7 +140,7 @@ const AppointmentCreated: React.FC<Readonly<EmailTemplateProps>> = ({
                 <Column className="inline-block text-sm">
                   {appointmentData.modality === "online"
                     ? "Online - Vía Google meet"
-                    : `Presencial - Consultorio: direccion`}
+                    : `Presencial - Consultorio: ${appointmentData.address}`}
                 </Column>
               </Row>
               <Row className="mt-2">
