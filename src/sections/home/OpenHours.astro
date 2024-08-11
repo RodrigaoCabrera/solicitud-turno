@@ -15,26 +15,27 @@ const availability = await db.select().from(Availability);
 // Formated data for to group repeated available hours
 let openHours: OpenHours[] = [];
 
-for (let el of availability) {
-  const am = `${el.startTimeAM}-${el.endTimeAM}`;
-  const pm = `${el.startTimePM}-${el.endTimePM}`;
+if (availability && availability.length > 0) {
+  for (let el of availability) {
+    const am = `${el.startTimeAM}-${el.endTimeAM}`;
+    const pm = `${el.startTimePM}-${el.endTimePM}`;
 
-  const existOpenHours = openHours.find(
-    (openHour: OpenHours) => openHour.am === am && openHour.pm === pm
-  );
+    const existOpenHours = openHours.find(
+      (openHour: OpenHours) => openHour.am === am && openHour.pm === pm
+    );
 
-  if (!existOpenHours) {
-    if (!el.dayOfWeek) return;
-    openHours.push({
-      days: [el.dayOfWeek],
-      am,
-      pm,
-    });
-    continue;
-  }
+    if (!existOpenHours) {
+      openHours.push({
+        days: [el.dayOfWeek as number],
+        am,
+        pm,
+      });
+      continue;
+    }
 
-  if (!existOpenHours.days && !el.dayOfWeek) {
-    existOpenHours.days = [/* ...existOpenHours.days, el.dayOfWeek */ 0];
+    if (existOpenHours.days && el.dayOfWeek) {
+      existOpenHours.days = [...existOpenHours.days, el.dayOfWeek];
+    }
   }
 }
 
