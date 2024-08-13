@@ -10,6 +10,14 @@ const errorMessage =
   errors && errors[erroKey] && errors[erroKey][0].replace("Invalid type:", "");
 ---
 
-<span id={errorId}>
-  {errorMessage}
-</span>
+<div id={errorId}>
+  <span
+    class="border bg-red-100 border-red-400 text-red-700 px-2 py-1 mt-2 rounded relative error-message inline-block"
+    role="alert">{errorMessage}</span
+  >
+</div>
+<style>
+  span.error-message:empty {
+    display: none;
+  }
+</style>

@@ -26,12 +26,13 @@ interface Props {
   value: string;
   required?: boolean;
   checked?: boolean;
+  className?: string;
 }
 
-const { label, type, id, name, value, required } = Astro.props;
+const { label, type, id, name, value, required, className } = Astro.props;
 ---
 
-<div class="patientType flex flex-col">
+<div class=`patientType flex flex-col ${className}`>
   <label
     class={`patientTypeLabel text-m text-[#222B45] ${type === radioInput && "rounded-full text-center h-100 border-[1px] border-solid border-[#94A3B8] pt-2 px-2 p-1 cursor-pointer"}`}
     for={id}>{label}</label
