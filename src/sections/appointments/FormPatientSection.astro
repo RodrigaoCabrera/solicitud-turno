@@ -35,6 +35,31 @@ const { errors, formData } = Astro.props;
   <Typography as="h2" variant="lg" color="darkText" class="font-medium mb-2">
     ¿Para quién es el turno?</Typography
   >
+  <section>
+    <div class="flex justify-center gap-3 flex-wrap mt-1">
+      <Input
+        label="Paciente regular"
+        type="radio"
+        name="patientType"
+        id="regularPatient"
+        value="Paciente regular"
+        className="flex-1"
+      />
+      <Input
+        label="Es la primera vez"
+        type="radio"
+        name="patientType"
+        id="newPatient"
+        value="Paciente nuevo"
+        className="flex-1"
+      />
+    </div>
+    <InputError
+      errors={errors}
+      erroKey="patient.type"
+      errorId="patientTypeError"
+    />
+  </section>
   <Input
     label="Nombre"
     type="text"
@@ -113,30 +138,4 @@ const { errors, formData } = Astro.props;
     erroKey="patient.healthInsurance"
     errorId="patientHealthInsuranceError"
   />
-
-  <div class="flex justify-center gap-3 flex-wrap mt-1">
-    <section class="flex-1">
-      <Input
-        label="Paciente regular"
-        type="radio"
-        name="patientType"
-        id="regularPatient"
-        value="Paciente regular"
-      />
-      <InputError
-        errors={errors}
-        erroKey="patient.type"
-        errorId="patientTypeError"
-      />
-    </section>
-    <section class="flex-1">
-      <Input
-        label="Es la primera vez"
-        type="radio"
-        name="patientType"
-        id="newPatient"
-        value="Paciente nuevo"
-      />
-    </section>
-  </div>
 </section>
