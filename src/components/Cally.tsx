@@ -123,6 +123,7 @@ function Picker({
 
   return (
     <div>
+      <p className="text-sm text-[#222B45] mb-1">Fecha</p>
       <CalendarDate
         value={value.calendarDate}
         min={format(today, "YYYY-MM-DD")} // Dí a actual
@@ -262,6 +263,7 @@ function Cally({
   return (
     <>
       <AppointmentModality onChange={onChange} modality={value.modality} />
+
       <Picker
         value={value}
         onChange={onChange}
