@@ -1,36 +1,14 @@
-import React, {
-  ChangeEvent,
-  ChangeEventHandler,
-  useEffect,
-  useState,
-} from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { date, format, isBefore, isEqual } from "@formkit/tempo";
-import AM from "./icons/AM";
+
 import AMTimeSelectorIcon from "./icons/AMTimeSelectorIcon";
 import PMTimeSelectorIcon from "./icons/PMTimeSelector";
-
-interface Availability {
-  id: number;
-  dayOfWeek: number;
-  startTimeAM: string;
-  endTimeAM: string;
-  startTimePM: string;
-  endTimePM: string;
-  professionalId: string;
-  sessionAmount: number;
-}
-interface Appointments {
-  id: string;
-  date: string;
-  time: string;
-  isActive: boolean;
-  professionalId: string;
-  patientId: string;
-}
+import { AvailabilityType } from "@/types/availability";
+import { AppointmentsType } from "@/types/appointments";
 
 interface Props {
-  availability: Availability[];
-  appointments: Appointments[];
+  availability: AvailabilityType[];
+  appointments: AppointmentsType[];
   sessionTime: number;
   value: {
     calendarDate?: string;
@@ -64,7 +42,7 @@ const TimeSlotSelector: React.FC<Props> = ({
   });
   const [slots, setSlots] = useState<Slots[]>([]);
 
-  const getCurrentDateAvailability = (): Availability | undefined => {
+  const getCurrentDateAvailability = (): AvailabilityType | undefined => {
     const selectedDate = date(value.calendarDate);
 
     return availability.find(
@@ -73,7 +51,7 @@ const TimeSlotSelector: React.FC<Props> = ({
   };
 
   const generateTimeSlots = (
-    availability: Availability,
+    availability: AvailabilityType,
     type: "AM" | "PM"
   ): Slots[] => {
     const startTime =

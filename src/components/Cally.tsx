@@ -1,4 +1,4 @@
-import { MouseEvent, useRef, useState, type ChangeEvent } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { CalendarDate, CalendarMonth } from "./Calendar";
 import {
   format,
@@ -6,8 +6,6 @@ import {
   isEqual,
   addMonth,
   monthEnd,
-  parse,
-  applyOffset,
 } from "@formkit/tempo";
 import TimeSlotSelector from "./TimeSlotSelector.tsx";
 import AppointmentModality from "./AppointmentModality.tsx";
@@ -15,59 +13,20 @@ import { Modal, ModalTrigger } from "./UI/modal/Modal.tsx";
 
 /* Styles */
 import "../styles/cally.css";
-
-interface Appointmentdate {
-  calendarDate: string;
-  calendarTime: string;
-  modality: string;
-}
-interface Availability {
-  id: number;
-  dayOfWeek: number; // 0-6 para representar días de la semana
-  startTimeAM: string; // Formato HH:MM
-  endTimeAM: string; // Formato HH:MM
-  startTimePM: string; // Formato HH:MM
-  endTimePM: string; // Formato HH:MM
-  professionalId: string;
-  sessionAmount: number;
-}
-interface ProfessionalProfile {
-  id: string;
-  firstName: string; // 0-6 para representar días de la semana
-  lastName: string; // Formato HH:MM
-  email: string; // Formato HH:MM
-  profession: string; // Formato HH:MM
-  sessionTime: number; // Formato HH:MM
-}
-
-interface Appointments {
-  id: string;
-  date: string;
-  time: string;
-  isActive: boolean;
-  professionalId: string;
-  patientId: string;
-}
-interface ProfessionalData {
-  id: string;
-  sessionTime: number;
-  address: string;
-  firstName: string;
-  lastName: string;
-}
-
+import { AppointmentInfo, AppointmentsType } from "@/types/appointments.ts";
+import { AvailabilityType } from "@/types/availability.ts";
+import { ProfessionalData } from "@/types/professionalData.ts";
 function Picker({
   value,
   onChange,
-  professionalData,
   availability,
   appointments,
 }: {
-  value: Appointmentdate;
+  value: AppointmentInfo;
   onChange: (event: Event | ChangeEvent<HTMLInputElement>) => void;
   professionalData: ProfessionalData;
-  availability: Availability[];
-  appointments: Appointments[];
+  availability: AvailabilityType[];
+  appointments: AppointmentsType[];
 }) {
   const [today, setToday] = useState(() => {
     const now = new Date();
@@ -77,13 +36,13 @@ function Picker({
   });
 
   const availableDays = availability.map(
-    (data: Availability) => data.dayOfWeek
+    (data: AvailabilityType) => data.dayOfWeek
   );
 
   const isfilledSchedule = (date: Date) => {
     // Filtrar los appointments que coincidan con el 'date'
     const selectedDayAppointments = appointments.filter(
-      (appointment: Appointments) => {
+      (appointment: AppointmentsType) => {
         const calendarDate = format({
           date,
           format: "YYYY-MM-DD",
@@ -205,10 +164,10 @@ function Cally({
   appointments,
 }: {
   professionalData: ProfessionalData;
-  availability: Availability[];
-  appointments: Appointments[];
+  availability: AvailabilityType[];
+  appointments: AppointmentsType[];
 }) {
-  const [value, setValue] = useState<Appointmentdate>(() => {
+  const [value, setValue] = useState<AppointmentInfo>(() => {
     const storedDate = localStorage.getItem("storedDate");
     const storedTime = localStorage.getItem("storedTime");
     const modality = localStorage.getItem("modality");
@@ -274,7 +233,6 @@ function Cally({
 
       {professionalData && value.calendarDate && (
         <TimeSlotSelector
-          //onChange={onChange}
           value={value}
           availability={availability}
           sessionTime={professionalData?.sessionTime}

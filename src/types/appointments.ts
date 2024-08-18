@@ -18,3 +18,8 @@ export interface EmailData {
   email: string;
   address: string;
 }
+export interface AppointmentInfo {
+  calendarDate: string;
+  calendarTime: string;
+  modality: string;
+}
