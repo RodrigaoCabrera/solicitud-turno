@@ -6,6 +6,7 @@ import {
   isEqual,
   addMonth,
   monthEnd,
+  isBefore,
 } from "@formkit/tempo";
 import TimeSlotSelector from "./TimeSlotSelector.tsx";
 import AppointmentModality from "./AppointmentModality.tsx";
@@ -21,20 +22,15 @@ function Picker({
   onChange,
   availability,
   appointments,
+  today,
 }: {
   value: AppointmentInfo;
   onChange: (event: Event | ChangeEvent<HTMLInputElement>) => void;
   professionalData: ProfessionalData;
   availability: AvailabilityType[];
   appointments: AppointmentsType[];
+  today: Date;
 }) {
-  const [today, setToday] = useState(() => {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-
-    return now;
-  });
-
   const availableDays = availability.map(
     (data: AvailabilityType) => data.dayOfWeek
   );
@@ -167,14 +163,23 @@ function Cally({
   availability: AvailabilityType[];
   appointments: AppointmentsType[];
 }) {
+  const [today, setToday] = useState(() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    return now;
+  });
+
   const [value, setValue] = useState<AppointmentInfo>(() => {
     const storedDate = localStorage.getItem("storedDate");
     const storedTime = localStorage.getItem("storedTime");
     const modality = localStorage.getItem("modality");
 
     if (storedDate && storedTime && modality) {
+      const isBeforeTheSelectedDate = isBefore(storedDate, today);
+      console.log({ isBeforeTheSelectedDate });
       return {
-        calendarDate: storedDate,
+        calendarDate: isBeforeTheSelectedDate ? "" : storedDate,
         calendarTime: storedTime,
         modality,
       };
@@ -229,6 +234,7 @@ function Cally({
         professionalData={professionalData}
         availability={availability}
         appointments={appointments}
+        today={today}
       />
 
       {professionalData && value.calendarDate && (
