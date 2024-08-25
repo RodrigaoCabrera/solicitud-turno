@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { disableOldAppoinment } from "@/scripts/disableOldAppointment";
 
-export const POST: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ request }) => {
   try {
     await disableOldAppoinment();
     return new Response(
