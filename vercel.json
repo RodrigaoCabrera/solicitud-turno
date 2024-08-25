@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/cron-disable-old-appointments",
+      "path": "/api/disableOldAppointment",
       "schedule": "0 0 * * *"
     }
   ]
