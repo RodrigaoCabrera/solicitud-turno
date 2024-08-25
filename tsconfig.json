@@ -7,7 +7,12 @@
       "@/*": ["./src/*"],
       "jsx": ["react-jsx"],
       "jsxImportSource": ["react"]
-    }
+    },
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "target": "ESNext",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "exclude": ["public"]
 }

@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "db:push": "drizzle-kit push:pg"
+    "db:push": "drizzle-kit push:pg",
+    "disable-old-appointments": "ts-node --esm src/scripts/disableOldAppointment.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.8.3",
@@ -24,7 +25,9 @@
     "@types/react-dom": "^18.3.0",
     "astro": "^4.12.2",
     "cally": "^0.7.1",
+    "dotenv": "^16.4.5",
     "drizzle-orm": "^0.32.1",
+    "node-cron": "^3.0.3",
     "postgres": "^3.4.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -34,7 +37,10 @@
     "valibot": "^0.33.3"
   },
   "devDependencies": {
-    "@types/node": "^22.1.0",
-    "drizzle-kit": "^0.23.1"
+    "@types/node": "^22.4.1",
+    "@types/node-cron": "^3.0.11",
+    "drizzle-kit": "^0.23.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.17.0"
   }
 }
