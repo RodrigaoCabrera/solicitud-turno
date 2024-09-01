@@ -1,18 +1,13 @@
 ---
-const iconPathMap: { [key: string]: string } = {
-  CalendarIcon: "/src/astro-components/icons/CalendarIcon.astro",
-  Clock: "/src/astro-components/icons/Clock.astro",
-  Office: "/src/astro-components/icons/Office.astro",
-};
-interface Props {
-  iconPath: string;
-}
+const icons: any = import.meta.glob("../icons/*.astro");
 const { iconPath } = Astro.props;
-console.log({ iconPath });
-console.log("ICON:", iconPathMap[iconPath]);
-const Component = await import(iconPathMap[iconPath]).then(
-  (module) => module.default
-);
+
+let Component;
+if (icons[`../icons/${iconPath}.astro`]) {
+  Component = (await icons[`../icons/${iconPath}.astro`]()).default;
+} else {
+  throw new Error(`Icon not found: ${iconPath}`);
+}
 ---
 
 <Component width="15" height="15" viewBox="0 0 15 15" fill="none" />
