@@ -1,12 +1,26 @@
 ---
-const icons: any = import.meta.glob("../icons/*.astro");
+import DefaultIcon from "../icons/DefaultIcon.astro";
+
+type AstroIconComponent = (props: {
+  width: string;
+  height: string;
+  viewBox: string;
+  fill: string;
+}) => any;
+
+const icons = import.meta.glob<{ default: AstroIconComponent }>(
+  "../icons/*.astro"
+);
+
 const { iconPath } = Astro.props;
 
-let Component;
-if (icons[`../icons/${iconPath}.astro`]) {
-  Component = (await icons[`../icons/${iconPath}.astro`]()).default;
+const astroIcon = icons[`../icons/${iconPath}.astro`];
+let Component: AstroIconComponent;
+if (astroIcon) {
+  const module = await astroIcon();
+  Component = module.default;
 } else {
-  throw new Error(`Icon not found: ${iconPath}`);
+  Component = DefaultIcon;
 }
 ---
 
