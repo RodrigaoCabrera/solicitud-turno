@@ -6,15 +6,15 @@ const address = Astro.url.searchParams.get("address") || "";
 
 const list = [
   {
-    iconPath: "/src/astro-components/icons/CalendarIcon.astro",
+    iconPath: "CalendarIcon",
     value: format(date || "", "full", "es"),
   },
   {
-    iconPath: "/src/astro-components/icons/Clock.astro",
+    iconPath: "Clock",
     value: `${time}h`,
   },
   {
-    iconPath: "/src/astro-components/icons/Office.astro",
+    iconPath: "Office",
     value:
       modality === "online" ? "Online" : `Presencial - Consultorio: ${address}`,
   },

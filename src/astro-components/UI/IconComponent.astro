@@ -1,9 +1,16 @@
 ---
+const iconPathMap: { [key: string]: string } = {
+  CalendarIcon: "../icons/CalendarIcon.astro",
+  Clock: "../icons/Clock.astro",
+  Office: "../icons/Office.astro",
+};
 interface Props {
   iconPath: string;
 }
 const { iconPath } = Astro.props;
-const Component = await import(iconPath).then((module) => module.default);
+const Component = await import(iconPathMap[iconPath]).then(
+  (module) => module.default
+);
 ---
 
 <Component width="15" height="15" viewBox="0 0 15 15" fill="none" />
