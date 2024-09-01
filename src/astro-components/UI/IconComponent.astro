@@ -3,7 +3,6 @@ interface Props {
   iconPath: string;
 }
 const { iconPath } = Astro.props;
-
 const Component = await import(iconPath).then((module) => module.default);
 ---
 
