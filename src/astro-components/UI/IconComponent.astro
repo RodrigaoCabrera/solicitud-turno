@@ -1,13 +1,15 @@
 ---
 const iconPathMap: { [key: string]: string } = {
-  CalendarIcon: "../icons/CalendarIcon.astro",
-  Clock: "../icons/Clock.astro",
-  Office: "../icons/Office.astro",
+  CalendarIcon: "/src/astro-components/icons/CalendarIcon.astro",
+  Clock: "/src/astro-components/icons/Clock.astro",
+  Office: "/src/astro-components/icons/Office.astro",
 };
 interface Props {
   iconPath: string;
 }
 const { iconPath } = Astro.props;
+console.log({ iconPath });
+console.log("ICON:", iconPathMap[iconPath]);
 const Component = await import(iconPathMap[iconPath]).then(
   (module) => module.default
 );
