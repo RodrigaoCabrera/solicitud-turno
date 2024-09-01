@@ -1,0 +1,43 @@
+---
+import ListItem from "./ListItem.astro";
+import IconComponent from "./IconComponent.astro";
+import Typography from "./Typography.astro";
+
+type Item = { iconPath: string; value: string };
+interface Props {
+  classes?: string;
+  list: Item[];
+}
+
+const { list, classes } = Astro.props;
+---
+
+<section class={classes}>
+  <slot name="check-icon" />
+  <slot name="title" />
+  <slot name="subtitle" />
+  <article class="px-10">
+    {
+      list.map((item: Item) => {
+        return (
+          <ListItem>
+            <span slot="icon" class="inline-block pt-[6px]">
+              <IconComponent iconPath={item.iconPath} />
+            </span>
+            <span slot="item">
+              <Typography
+                as="p"
+                variant="sm"
+                color="black"
+                class="first-letter:uppercase pt-1"
+              >
+                {item.value}
+              </Typography>
+            </span>
+          </ListItem>
+        );
+      })
+    }
+    <slot name="list-items-after" />
+  </article>
+</section>

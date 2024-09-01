@@ -79,7 +79,7 @@ export function Modal({
         <section className="flex flex-col items-center gap-1 mt-3">
           <div className="w-full">
             <a
-              href="/appointments"
+              href={`/appointments?date=${value.calendarDate}&time=${value.calendarTime}&modality=${value.modality}&address=${professionalData.address}`}
               onClick={addToLocalStorage}
               className="w-full text-center inline-block px-3 py-1.5 duration-150 rounded-full border-[1px] border-solid boder-[#94A3B8]"
             >

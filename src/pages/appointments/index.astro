@@ -1,7 +1,24 @@
 ---
-import { Resend } from "resend";
-import AppointmentCreated from "@/components/emails-templates/AppointmentCreated.tsx";
-import { serialize } from "cookie";
+const date = Astro.url.searchParams.get("date") || "";
+const time = Astro.url.searchParams.get("time") || "";
+const modality = Astro.url.searchParams.get("modality") || "";
+const address = Astro.url.searchParams.get("address") || "";
+
+const list = [
+  {
+    iconPath: "../icons/CalendarIcon.astro",
+    value: format(date || "", "full", "es"),
+  },
+  {
+    iconPath: "../icons/Clock.astro",
+    value: `${time}h`,
+  },
+  {
+    iconPath: "../icons/Office.astro",
+    value:
+      modality === "online" ? "Online" : `Presencial - Consultorio: ${address}`,
+  },
+];
 /* Services */
 import registerAppointment from "../../services/registerAppointment.ts";
 import sendEmail from "../../services/sendEmail.ts";
@@ -15,6 +32,8 @@ import FormPatientSection from "@/sections/appointments/FormPatientSection.astro
 import FormTutorSection from "@/sections/appointments/FormTutorSection.astro";
 import Button from "@/astro-components/UI/Button.astro";
 import Typography from "@/astro-components/UI/Typography.astro";
+import InfoDateCard from "@/astro-components/UI/InfoDateCard.astro";
+import { format } from "@formkit/tempo";
 
 let apiError: string | null = null;
 let errors;
@@ -193,7 +212,39 @@ if (Astro.request.method === "POST") {
 <Layout title="Formulario de solicitud de turno">
   <section>
     <GoBack label="Regresar" to="/calendar" />
+    <InfoDateCard
+      list={list}
+      classes="flex flex-col items-center justify-center w-full rounded-lg bg-[#F8F8F8] pt-6 pb-4 mt-3"
+    >
+      <Typography
+        as="p"
+        variant="m"
+        color="darkText"
+        class="font-medium mb-2 leading-4 tracking-wider"
+        slot="subtitle"
+        >¡Ya casi tenés tu turno reservado!
+      </Typography>
 
+      <div slot="list-items-after">
+        <Typography
+          as="a"
+          variant="xs"
+          color="darkText"
+          class="font-regular text-end block underline"
+          href="/calendar"
+          >Editar
+        </Typography>
+      </div>
+    </InfoDateCard>
+    <Typography
+      as="p"
+      variant="sm"
+      color="darkText"
+      class="my-4 leading-4 tracking-wider"
+    >
+      Necesitamos que nos proporciones algunos datos más para finalizar el
+      proceso:
+    </Typography>
     {
       apiError && (
         <div
