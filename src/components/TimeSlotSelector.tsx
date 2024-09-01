@@ -66,18 +66,24 @@ const TimeSlotSelector: React.FC<Props> = ({
 
     const newSlots = [];
     let current = startDate;
+    const appointmentsOfTheSelectedDay = appointments.filter(
+      (appointment) =>
+        appointment.date === value.calendarDate && appointment.isActive
+    );
     while (current < endDate) {
       // Verify if appointment exists
-      const existAppointment = appointments.some((appointment) => {
-        const appointmentDate = `${appointment.date} ${appointment.time}`;
-        const currentDate = format({
-          date: current,
-          format: "YYYY-MM-DD HH:mm",
-          tz: "America/Argentina/Buenos_Aires",
-        });
+      const existAppointment = appointmentsOfTheSelectedDay.some(
+        (appointment) => {
+          const appointmentDate = `${appointment.date} ${appointment.time}`;
+          const currentDate = format({
+            date: current,
+            format: "YYYY-MM-DD HH:mm",
+            tz: "America/Argentina/Buenos_Aires",
+          });
 
-        return isEqual(appointmentDate, currentDate);
-      });
+          return isEqual(appointmentDate, currentDate);
+        }
+      );
 
       // Verify current time, and to disable completed hours
       const currentTime = Date.now() - 30 * 60 * 1000;

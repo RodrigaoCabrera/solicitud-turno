@@ -15,6 +15,8 @@ import { safeParse } from "valibot";
 
 import { appoinmentDataSchema } from "@/utils/appoinmentDataSchema";
 
+const MAXIMUN_APPOINMENT_ALLOWED = 1;
+
 const generateId = (str: string) => {
   return createHash("sha256").update(str).digest("hex");
 };
@@ -85,15 +87,25 @@ export const POST: APIRoute = async ({ request }) => {
   const existingAppointment = await db
     .select()
     .from(Appointments)
-    .where(eq(Appointments.patientId, patientId))
-    .limit(1);
+    .where(eq(Appointments.patientId, patientId));
 
-  if (existingAppointment.length > 0 && existingAppointment[0].isActive) {
+  const isMaximunRequestAllowed =
+    existingAppointment.filter((appointment) => appointment.isActive).length >=
+    MAXIMUN_APPOINMENT_ALLOWED;
+
+  if (isMaximunRequestAllowed) {
     return res(
-      { message: "El paciente ya tiene un turno activo" },
+      {
+        message: `Solo tiene permitido agendar ${MAXIMUN_APPOINMENT_ALLOWED} turnos`,
+      },
       { status: 409 }
     ); // 409 Conflict
   }
+
+  const inactiveAppoinments = existingAppointment.filter(
+    (appointment) => !appointment.isActive
+  );
+
   // Check if exist a active date
   const existingAppointmentDate = await db
     .select()
@@ -133,20 +145,27 @@ export const POST: APIRoute = async ({ request }) => {
       tutorId,
     })
     .onConflictDoUpdate({ target: Patients.id, set: { ...patient } });
-  // Add tutor data
-  await db
-    .insert(Appointments)
-    .values({
-      id: appointmentId,
-      ...appointment,
-      isActive: true,
-      patientId: patientId,
-    })
-    .onConflictDoUpdate({
-      target: Appointments.id,
-      set: { isActive: true, patientId: patientId },
-    });
 
+  // Add appointment data
+  if (inactiveAppoinments.length > 0) {
+    await db
+      .update(Appointments)
+      .set({ id: inactiveAppoinments[0].id, isActive: true, ...appointment })
+      .where(eq(Appointments.id, inactiveAppoinments[0].id));
+  } else {
+    await db
+      .insert(Appointments)
+      .values({
+        id: appointmentId,
+        ...appointment,
+        isActive: true,
+        patientId: patientId,
+      })
+      .onConflictDoUpdate({
+        target: Appointments.id,
+        set: { isActive: true, patientId: patientId },
+      });
+  }
   return res(
     { message: "Turno reservado con éxito", id: appointmentId },
     { status: 200 }
