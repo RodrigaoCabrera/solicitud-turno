@@ -1,5 +1,4 @@
 import { createHash } from "node:crypto";
-
 import type { APIRoute } from "astro";
 import {
   Tutors,
@@ -9,165 +8,150 @@ import {
   ProfessionalProfile,
 } from "../../../../db/schema.ts";
 import { db } from "../../../../db/db.ts";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { date } from "@formkit/tempo";
 import { safeParse } from "valibot";
-
 import { appoinmentDataSchema } from "@/utils/appoinmentDataSchema";
 
-const MAXIMUN_APPOINMENT_ALLOWED = 1;
+const MAXIMUM_APPOINTMENT_ALLOWED = 1;
 
-const generateId = (str: string) => {
-  return createHash("sha256").update(str).digest("hex");
+const generateId = (str: string) => createHash("sha256").update(str).digest("hex");
+
+const createResponse = (body: { message: string; id?: string }, status: number) => 
+  new Response(JSON.stringify(body), { status });
+
+// Define a custom error type
+class AppointmentError extends Error {
+  status: number;
+  constructor(message: string, status: number = 400) {
+    super(message);
+    this.name = 'AppointmentError';
+    this.status = status;
+  }
+}
+
+const checkProfessionalProfile = async (professionalId: string) => {
+  const profile = await db
+    .select({ id: ProfessionalProfile.id })
+    .from(ProfessionalProfile)
+    .where(eq(ProfessionalProfile.id, professionalId))
+    .limit(1);
+  
+  if (profile.length === 0) {
+    throw new AppointmentError(`No existe ningún perfil profesional con el professionalId: ${professionalId}`);
+  }
 };
-// Response
-const res = (
-  body: { message: string; id?: string },
-  {
-    status,
-    statusText,
-    headers,
-  }: { status?: number; statusText?: string; headers?: Headers }
-) => new Response(JSON.stringify(body), { status, statusText, headers });
 
-export const POST: APIRoute = async ({ request }) => {
-  const appointmentRequest = await request.json();
-
-  // Validate appointment data
-  const { success, output, issues } = safeParse(
-    appoinmentDataSchema,
-    appointmentRequest
-  );
-
-  if (!success)
-    return res(
-      { message: `Bad request: ${issues[0].message}` },
-      { status: 400 }
-    );
-
-  // Verify if there's availability for that day
+const checkAvailability = async (appointmentDate: string) => {
   const availableDays = await db
     .select({ dayOfWeek: Availability.dayOfWeek })
     .from(Availability);
 
-  const data = output;
-  const { patient, tutor, appointment } = data; // Datos de la request
-
-  // Verify if there's a  professional profile with professionalId of the request
-  const professionalProfile = await db
-    .select({ id: ProfessionalProfile.id })
-    .from(ProfessionalProfile)
-    .where(eq(ProfessionalProfile.id, output.appointment.professionalId));
-
-  if (professionalProfile.length <= 0) {
-    return res(
-      {
-        message: `No existe ningún perfil profesional con el professionalId: ${output.appointment.professionalId}`,
-      },
-      { status: 400 }
-    );
-  }
-
-  const isAvailableDay = availableDays.some((day) => {
-    return day.dayOfWeek === date(appointment.date).getDay();
-  });
+  const isAvailableDay = availableDays.some(day => 
+    day.dayOfWeek === date(appointmentDate).getDay()
+  );
 
   if (!isAvailableDay) {
-    return res(
-      { message: "No existe disponibilidad para la fecha solicitada" },
-      { status: 409 }
-    );
+    throw new AppointmentError("No existe disponibilidad para la fecha solicitada");
   }
+};
 
-  const appointmentId = generateId(appointment.date + appointment.time);
-  const patientId = generateId(patient.dni);
-  const tutorId = generateId(tutor.dni);
-
-  // Check that patient does not has a appointment
+const checkExistingAppointment = async (appointmentId: string) => {
   const existingAppointment = await db
     .select()
     .from(Appointments)
-    .where(eq(Appointments.patientId, patientId));
-
-  const isMaximunRequestAllowed =
-    existingAppointment.filter((appointment) => appointment.isActive).length >=
-    MAXIMUN_APPOINMENT_ALLOWED;
-
-  if (isMaximunRequestAllowed) {
-    return res(
-      {
-        message: `Solo tiene permitido agendar ${MAXIMUN_APPOINMENT_ALLOWED} turnos`,
-      },
-      { status: 409 }
-    ); // 409 Conflict
-  }
-
-  const inactiveAppoinments = existingAppointment.filter(
-    (appointment) => !appointment.isActive
-  );
-
-  // Check if exist a active date
-  const existingAppointmentDate = await db
-    .select()
-    .from(Appointments)
-    .where(eq(Appointments.id, appointmentId))
+    .where(and(eq(Appointments.id, appointmentId), eq(Appointments.isActive, true)))
     .limit(1);
 
-  if (
-    existingAppointmentDate.length > 0 &&
-    existingAppointmentDate[0].isActive
-  ) {
-    return res(
-      {
-        message: "Ya existe un turno para la fecha y hora especificadas",
-      },
-      {
-        status: 409,
-      }
-    );
+  if (existingAppointment.length > 0) {
+    throw new AppointmentError("Ya existe un turno para la fecha y hora especificadas", 409);
   }
+};
 
-  // Add tutor data
+const checkMaximumAppointments = async (patientId: string) => {
+  const activeAppointments = await db
+    .select()
+    .from(Appointments)
+    .where(and(eq(Appointments.patientId, patientId), eq(Appointments.isActive, true)));
+
+  if (activeAppointments.length >= MAXIMUM_APPOINTMENT_ALLOWED) {
+    throw new AppointmentError(`Solo tiene permitido agendar ${MAXIMUM_APPOINTMENT_ALLOWED} turnos`, 409);
+  }
+};
+
+const upsertTutor = async (tutorData: any, tutorId: string) => {
   await db
     .insert(Tutors)
-    .values({
-      id: tutorId,
-      ...tutor,
-    })
-    .onConflictDoUpdate({ target: Tutors.id, set: { ...tutor } });
+    .values({ id: tutorId, ...tutorData })
+    .onConflictDoUpdate({ target: Tutors.id, set: tutorData });
+};
 
-  // Add patient data
+const upsertPatient = async (patientData: any, patientId: string, tutorId: string) => {
   await db
     .insert(Patients)
-    .values({
-      id: patientId,
-      ...patient,
-      tutorId,
-    })
-    .onConflictDoUpdate({ target: Patients.id, set: { ...patient } });
+    .values({ id: patientId, ...patientData, tutorId })
+    .onConflictDoUpdate({ target: Patients.id, set: patientData });
+};
 
-  // Add appointment data
-  if (inactiveAppoinments.length > 0) {
+const upsertAppointment = async (appointmentData: any, appointmentId: string, patientId: string) => {
+  const inactiveAppointments = await db
+    .select()
+    .from(Appointments)
+    .where(and(eq(Appointments.patientId, patientId), eq(Appointments.isActive, false)))
+    .limit(1);
+
+  if (inactiveAppointments.length > 0) {
     await db
       .update(Appointments)
-      .set({ id: inactiveAppoinments[0].id, isActive: true, ...appointment })
-      .where(eq(Appointments.id, inactiveAppoinments[0].id));
+      .set({ ...appointmentData, isActive: true })
+      .where(eq(Appointments.id, inactiveAppointments[0].id));
   } else {
     await db
       .insert(Appointments)
       .values({
         id: appointmentId,
-        ...appointment,
+        ...appointmentData,
         isActive: true,
-        patientId: patientId,
+        patientId,
       })
       .onConflictDoUpdate({
         target: Appointments.id,
-        set: { isActive: true, patientId: patientId },
+        set: { isActive: true, patientId },
       });
   }
-  return res(
-    { message: "Turno reservado con éxito", id: appointmentId },
-    { status: 200 }
-  );
+};
+
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    const appointmentRequest = await request.json();
+    const { success, output, issues } = safeParse(appoinmentDataSchema, appointmentRequest);
+
+    if (!success) {
+      return createResponse({ message: `Bad request: ${issues[0].message}` }, 400);
+    }
+
+    const { patient, tutor, appointment } = output;
+
+    await checkProfessionalProfile(appointment.professionalId);
+    await checkAvailability(appointment.date);
+
+    const appointmentId = generateId(appointment.date + appointment.time);
+    const patientId = generateId(patient.dni);
+    const tutorId = generateId(tutor.dni);
+
+    await checkExistingAppointment(appointmentId);
+    await checkMaximumAppointments(patientId);
+
+    await upsertTutor(tutor, tutorId);
+    await upsertPatient(patient, patientId, tutorId);
+    await upsertAppointment(appointment, appointmentId, patientId);
+
+    return createResponse({ message: "Turno reservado con éxito", id: appointmentId }, 200);
+  } catch (error) {
+    console.error("Error processing appointment:", error);
+    if (error instanceof AppointmentError) {
+      return createResponse({ message: error.message }, error.status);
+    }
+    return createResponse({ message: "Internal server error" }, 500);
+  }
 };

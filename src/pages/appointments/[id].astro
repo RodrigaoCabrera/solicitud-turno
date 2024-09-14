@@ -55,6 +55,7 @@ if (!appoinmentData) {
       eq(Appointments.professionalId, ProfessionalProfile.id)
     );
 
+    console.log({appoinmentData})
   if (appoinmentData.length <= 0) return Astro.redirect("/404");
   appoinmentData = appoinmentData[0];
 }
