@@ -6,6 +6,7 @@ import Layout from "../layouts/Layout.astro";
 import Button from "@/astro-components/UI/Button.astro";
 import ProfessionalInfoSkeleton from "@/astro-components/UI/skeleton/ProfessionalInfoSkeleton.astro";
 import Typography from "@/astro-components/UI/Typography.astro";
+import App from "@/components/map/GoogleMap";
 import ProfessionalInfo from "@/sections/home/ProfessionalInfo.astro";
 ---
 
@@ -23,4 +24,6 @@ import ProfessionalInfo from "@/sections/home/ProfessionalInfo.astro";
       Agendar turno
     </Typography>
   </Button>
+
+  <App client:only/>
 </Layout>
