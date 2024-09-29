@@ -5,6 +5,7 @@ import Cally from "../../components/Cally.tsx";
 import { AvailabilityType } from "../../types/availability.ts";
 import { AppointmentsType } from "@/types/appointments";
 import { ProfessionalData } from "@/types/professionalData";
+import { eq } from "drizzle-orm";
 async function getData() {
   // Obtener los datos de disponibilidad
   try {
@@ -20,7 +21,7 @@ async function getData() {
           })
           .from(ProfessionalProfile),
         db.select().from(Availability),
-        db.select().from(Appointments),
+        db.select().from(Appointments).where(eq(Appointments.isActive, true)),
       ]);
 
     return {

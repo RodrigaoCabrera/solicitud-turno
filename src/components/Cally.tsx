@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { CalendarDate, CalendarMonth } from "./Calendar";
 import {
   format,
@@ -17,6 +17,10 @@ import "../styles/cally.css";
 import { AppointmentInfo, AppointmentsType } from "@/types/appointments.ts";
 import { AvailabilityType } from "@/types/availability.ts";
 import { ProfessionalData } from "@/types/professionalData.ts";
+
+type GroupedAppointments = {
+  [key: string]: AppointmentsType[];
+};
 function Picker({
   value,
   onChange,
@@ -35,20 +39,20 @@ function Picker({
     (data: AvailabilityType) => data.dayOfWeek
   );
 
+  const groupedAppointments = useMemo(() => {
+    return Object.groupBy(appointments, (appointment) => {
+      const day = format({ date: appointment.date, format: "YYYY-MM-DD" });
+      return day;
+    });
+  }, [appointments])
+  
   const isfilledSchedule = (date: Date) => {
     // Filtrar los appointments que coincidan con el 'date'
-    const selectedDayAppointments = appointments.filter(
-      (appointment: AppointmentsType) => {
-        const calendarDate = format({
-          date,
-          format: "YYYY-MM-DD",
-          tz: "Pacific/Chatham",
-        });
-        return isEqual(calendarDate, appointment.date);
-      }
-    );
+    const currentDay: string = format({ date: date, format: "YYYY-MM-DD" });
 
-    if (selectedDayAppointments.length <= 0) {
+    const selectedDayAppointments = groupedAppointments[currentDay];
+
+    if (!selectedDayAppointments) {
       return false;
     }
 
@@ -65,6 +69,10 @@ function Picker({
   };
 
   const isDateDisallowed = (date: Date) => {
+    const isBeforeToDay = isBefore(date, today);
+    if (isBeforeToDay) {
+      return true;
+    }
     if (availableDays.length <= 0) {
       return true;
     }
