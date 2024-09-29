@@ -5,7 +5,7 @@ interface Props {
   timeZone: string;
 }
 const PMTimeSelectorIcon = ({ timeZone }: Props) => {
-  console.log(timeZone);
+
   return (
     <>
       {timeZone === "PM" ? (
